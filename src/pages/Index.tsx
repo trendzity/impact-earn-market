@@ -1,14 +1,35 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import Navbar from "@/components/Navbar";
+import HeroSlider from "@/components/HeroSlider";
+import SocialProof from "@/components/SocialProof";
+import HowItWorks from "@/components/HowItWorks";
+import Ecosystem from "@/components/Ecosystem";
+import DailyTasks from "@/components/DailyTasks";
+import InfluencerMarketplace from "@/components/InfluencerMarketplace";
+import CampaignBuilder from "@/components/CampaignBuilder";
+import Gamification from "@/components/Gamification";
+import PricingPlans from "@/components/PricingPlans";
+import ReferralProgram from "@/components/ReferralProgram";
+import Testimonials from "@/components/Testimonials";
+import FinalCTA from "@/components/FinalCTA";
+import Footer from "@/components/Footer";
 
-const Index = () => {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
-};
+const Index = () => (
+  <div className="min-h-screen bg-background">
+    <Navbar />
+    <HeroSlider />
+    <SocialProof />
+    <HowItWorks />
+    <Ecosystem />
+    <DailyTasks />
+    <InfluencerMarketplace />
+    <CampaignBuilder />
+    <Gamification />
+    <PricingPlans />
+    <ReferralProgram />
+    <Testimonials />
+    <FinalCTA />
+    <Footer />
+  </div>
+);
 
 export default Index;
