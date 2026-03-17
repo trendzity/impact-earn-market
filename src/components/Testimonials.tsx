@@ -12,7 +12,7 @@ const Testimonials = () => (
   <section className="section-padding">
     <div className="container mx-auto">
       <div className="text-center mb-16">
-        <span className="text-sm text-primary font-medium uppercase tracking-wider">Testimonials</span>
+        <span className="text-sm text-accent font-medium uppercase tracking-wider">Testimonials</span>
         <h2 className="text-3xl md:text-5xl font-bold mt-3 mb-4">What Our Users Say</h2>
       </div>
 
@@ -34,7 +34,7 @@ const Testimonials = () => (
             <p className="text-sm text-muted-foreground mb-4 italic">"{t.text}"</p>
             <div>
               <div className="font-semibold text-foreground text-sm">{t.name}</div>
-              <div className="text-xs text-primary">{t.role}</div>
+              <div className="text-xs text-accent">{t.role}</div>
             </div>
           </motion.div>
         ))}

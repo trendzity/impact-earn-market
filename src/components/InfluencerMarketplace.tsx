@@ -9,7 +9,7 @@ const features = [
 
 const levels = [
   { icon: <Star className="w-6 h-6" />, name: "Starter Influencer", range: "0 – 1K followers", color: "text-muted-foreground" },
-  { icon: <Zap className="w-6 h-6" />, name: "Pro Influencer", range: "1K – 50K followers", color: "text-primary" },
+  { icon: <Zap className="w-6 h-6" />, name: "Pro Influencer", range: "1K – 50K followers", color: "text-accent" },
   { icon: <Crown className="w-6 h-6" />, name: "Elite Influencer", range: "50K+ followers", color: "text-accent" },
 ];
 
@@ -17,7 +17,7 @@ const InfluencerMarketplace = () => (
   <section className="section-padding">
     <div className="container mx-auto">
       <div className="text-center mb-16">
-        <span className="text-sm text-primary font-medium uppercase tracking-wider">Influencer Marketplace</span>
+        <span className="text-sm text-accent font-medium uppercase tracking-wider">Influencer Marketplace</span>
         <h2 className="text-3xl md:text-5xl font-bold mt-3 mb-4">Monetize Your Audience</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">Partner with brands, promote campaigns, and level up as an influencer.</p>
       </div>
@@ -30,9 +30,9 @@ const InfluencerMarketplace = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.1 }}
-            className="glass-card rounded-2xl p-8 text-center hover:border-primary/30 transition-colors"
+            className="glass-card rounded-2xl p-8 text-center hover:border-accent/30 transition-colors"
           >
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 text-primary mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-accent/10 text-accent mb-4">
               {f.icon}
             </div>
             <h3 className="text-lg font-bold mb-2">{f.title}</h3>

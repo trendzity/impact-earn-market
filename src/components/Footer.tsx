@@ -4,7 +4,7 @@ const Footer = () => (
       <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center font-bold text-sm text-primary-foreground">T</div>
+            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center font-bold text-sm text-accent-foreground">T</div>
             <span className="text-lg font-bold font-[family-name:var(--font-display)] text-foreground">Trendzity</span>
           </div>
           <p className="text-sm text-muted-foreground">Earn • Promote • Grow<br/>The Social Growth Marketplace</p>

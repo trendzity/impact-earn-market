@@ -9,10 +9,10 @@ const ReferralProgram = () => (
         <div className="absolute inset-0 bg-gradient-glow opacity-30" />
         <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <span className="text-sm text-primary font-medium uppercase tracking-wider">Referral Program</span>
+            <span className="text-sm text-accent font-medium uppercase tracking-wider">Referral Program</span>
             <h2 className="text-3xl md:text-5xl font-bold mt-3 mb-4">Invite Friends, Earn More</h2>
             <p className="text-muted-foreground mb-6">Share your referral link and earn credits every time a friend joins and completes tasks. Climb the referral leaderboard for bonus rewards.</p>
-            <Button size="lg" className="bg-gradient-primary text-primary-foreground hover:opacity-90">
+            <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
               Get Referral Link <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </div>
@@ -31,7 +31,7 @@ const ReferralProgram = () => (
                 transition={{ delay: i * 0.1 }}
                 className="flex items-start gap-4 p-4 rounded-xl bg-secondary/50"
               >
-                <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-accent/10 text-accent flex items-center justify-center shrink-0">
                   {item.icon}
                 </div>
                 <div>

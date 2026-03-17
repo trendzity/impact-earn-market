@@ -11,7 +11,7 @@ const Ecosystem = () => (
   <section className="section-padding">
     <div className="container mx-auto">
       <div className="text-center mb-16">
-        <span className="text-sm text-primary font-medium uppercase tracking-wider">Platform Ecosystem</span>
+        <span className="text-sm text-accent font-medium uppercase tracking-wider">Platform Ecosystem</span>
         <h2 className="text-3xl md:text-5xl font-bold mt-3 mb-4">One Marketplace, Three Pillars</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">Trendzity connects users, businesses, and influencers into a unified social growth marketplace.</p>
       </div>
@@ -24,16 +24,16 @@ const Ecosystem = () => (
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.2 }}
-              className="glass-card rounded-2xl p-8 text-center w-64 hover:border-primary/30 transition-colors"
+              className="glass-card rounded-2xl p-8 text-center w-64 hover:border-accent/30 transition-colors"
             >
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent/10 text-accent mb-4">
                 {n.icon}
               </div>
               <h3 className="text-lg font-bold mb-2">{n.label}</h3>
               <p className="text-sm text-muted-foreground">{n.desc}</p>
             </motion.div>
             {i < nodes.length - 1 && (
-              <ArrowRight className="hidden md:block w-6 h-6 text-primary/40" />
+              <ArrowRight className="hidden md:block w-6 h-6 text-accent/40" />
             )}
           </div>
         ))}
@@ -45,7 +45,7 @@ const Ecosystem = () => (
         viewport={{ once: true }}
         className="mt-12 text-center"
       >
-        <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-primary text-primary-foreground font-semibold">
+        <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-accent text-accent-foreground font-semibold">
           <span>Powered by Trendzity Marketplace</span>
         </div>
       </motion.div>
