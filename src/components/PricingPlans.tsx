@@ -30,7 +30,7 @@ const PricingPlans = () => (
   <section id="pricing" className="section-padding">
     <div className="container mx-auto">
       <div className="text-center mb-16">
-        <span className="text-sm text-primary font-medium uppercase tracking-wider">Pricing</span>
+        <span className="text-sm text-accent font-medium uppercase tracking-wider">Pricing</span>
         <h2 className="text-3xl md:text-5xl font-bold mt-3 mb-4">Choose Your Plan</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">Scale your social growth with flexible plans for everyone.</p>
       </div>
@@ -43,10 +43,10 @@ const PricingPlans = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.1 }}
-            className={`rounded-2xl p-8 ${p.featured ? "bg-gradient-primary text-primary-foreground shadow-glow scale-105" : "glass-card"} transition-transform`}
+            className={`rounded-2xl p-8 ${p.featured ? "bg-accent text-accent-foreground shadow-glow scale-105" : "glass-card"} transition-transform`}
           >
             <h3 className="text-xl font-bold mb-1">{p.name}</h3>
-            <p className={`text-sm mb-4 ${p.featured ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{p.desc}</p>
+            <p className={`text-sm mb-4 ${p.featured ? "text-accent-foreground/70" : "text-muted-foreground"}`}>{p.desc}</p>
             <div className="text-4xl font-bold mb-6">{p.price}</div>
             <ul className="space-y-3 mb-8">
               {p.features.map((f) => (
@@ -56,7 +56,7 @@ const PricingPlans = () => (
                 </li>
               ))}
             </ul>
-            <Button className={`w-full ${p.featured ? "bg-primary-foreground text-primary hover:bg-primary-foreground/90" : "bg-gradient-primary text-primary-foreground hover:opacity-90"}`}>
+            <Button className={`w-full ${p.featured ? "bg-accent-foreground text-accent hover:bg-accent-foreground/90" : "bg-accent text-accent-foreground hover:bg-accent/90"}`}>
               Get Started
             </Button>
           </motion.div>

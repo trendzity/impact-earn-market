@@ -14,10 +14,10 @@ const CampaignBuilder = () => (
     <div className="container mx-auto">
       <div className="grid md:grid-cols-2 gap-12 items-center">
         <div>
-          <span className="text-sm text-primary font-medium uppercase tracking-wider">Campaign Builder</span>
+          <span className="text-sm text-accent font-medium uppercase tracking-wider">Campaign Builder</span>
           <h2 className="text-3xl md:text-5xl font-bold mt-3 mb-4">Launch Marketing Campaigns in Minutes</h2>
           <p className="text-muted-foreground mb-6">Affordable micro campaigns powered by our global community. Perfect for startups and growing businesses.</p>
-          <Button size="lg" className="bg-gradient-primary text-primary-foreground hover:opacity-90">
+          <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
             Start Campaign <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         </div>
@@ -30,9 +30,9 @@ const CampaignBuilder = () => (
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="glass-card rounded-xl p-6 hover:border-primary/30 transition-colors"
+              className="glass-card rounded-xl p-6 hover:border-accent/30 transition-colors"
             >
-              <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4">
+              <div className="w-12 h-12 rounded-lg bg-accent/10 text-accent flex items-center justify-center mb-4">
                 {c.icon}
               </div>
               <h3 className="font-bold mb-1">{c.title}</h3>

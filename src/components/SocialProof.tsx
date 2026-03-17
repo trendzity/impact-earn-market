@@ -21,7 +21,7 @@ const SocialProof = () => (
             transition={{ delay: i * 0.1 }}
             className="text-center"
           >
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary mb-3">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent/10 text-accent mb-3">
               {s.icon}
             </div>
             <div className="text-3xl md:text-4xl font-bold text-foreground mb-1">{s.value}</div>

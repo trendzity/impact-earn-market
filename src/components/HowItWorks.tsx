@@ -11,7 +11,7 @@ const HowItWorks = () => (
   <section id="how-it-works" className="section-padding">
     <div className="container mx-auto">
       <div className="text-center mb-16">
-        <span className="text-sm text-primary font-medium uppercase tracking-wider">How It Works</span>
+        <span className="text-sm text-accent font-medium uppercase tracking-wider">How It Works</span>
         <h2 className="text-3xl md:text-5xl font-bold mt-3 mb-4">Three Simple Steps</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">Trendzity connects users, businesses, and influencers in one powerful ecosystem.</p>
       </div>
@@ -24,10 +24,10 @@ const HowItWorks = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.15 }}
-            className="relative glass-card rounded-2xl p-8 text-center group hover:border-primary/30 transition-colors"
+            className="relative glass-card rounded-2xl p-8 text-center group hover:border-accent/30 transition-colors"
           >
-            <div className="text-6xl font-bold text-primary/10 absolute top-4 right-6">{s.step}</div>
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary mb-5 group-hover:shadow-glow transition-shadow">
+            <div className="text-6xl font-bold text-accent/10 absolute top-4 right-6">{s.step}</div>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent/10 text-accent mb-5 group-hover:shadow-glow transition-shadow">
               {s.icon}
             </div>
             <h3 className="text-xl font-bold mb-3">{s.title}</h3>

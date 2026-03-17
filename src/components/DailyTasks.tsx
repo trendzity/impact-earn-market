@@ -14,7 +14,7 @@ const DailyTasks = () => (
   <section id="earning" className="section-padding">
     <div className="container mx-auto">
       <div className="text-center mb-16">
-        <span className="text-sm text-primary font-medium uppercase tracking-wider">Daily Task Engine</span>
+        <span className="text-sm text-accent font-medium uppercase tracking-wider">Daily Task Engine</span>
         <h2 className="text-3xl md:text-5xl font-bold mt-3 mb-4">Earn Credits Every Day</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">Complete simple social media tasks and receive credits instantly. The more you do, the more you earn.</p>
       </div>
@@ -27,14 +27,14 @@ const DailyTasks = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.08 }}
-            className="glass-card rounded-xl p-5 flex items-center gap-4 hover:border-primary/30 transition-colors group"
+            className="glass-card rounded-xl p-5 flex items-center gap-4 hover:border-accent/30 transition-colors group"
           >
-            <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:shadow-glow transition-shadow">
+            <div className="w-10 h-10 rounded-lg bg-accent/10 text-accent flex items-center justify-center shrink-0 group-hover:shadow-glow transition-shadow">
               {t.icon}
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium text-foreground">{t.label}</div>
-              <div className="text-xs text-primary font-semibold">{t.credits}</div>
+              <div className="text-xs text-accent font-semibold">{t.credits}</div>
             </div>
           </motion.div>
         ))}
