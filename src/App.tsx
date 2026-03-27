@@ -13,6 +13,17 @@ import ReferralsPage from "./pages/dashboard/ReferralsPage.tsx";
 import LeaderboardPage from "./pages/dashboard/LeaderboardPage.tsx";
 import ProfilePage from "./pages/dashboard/ProfilePage.tsx";
 import SettingsPage from "./pages/dashboard/SettingsPage.tsx";
+import AdminLayout from "./components/admin/AdminLayout.tsx";
+import AdminOverview from "./pages/admin/AdminOverview.tsx";
+import AdminUsers from "./pages/admin/AdminUsers.tsx";
+import AdminCampaigns from "./pages/admin/AdminCampaigns.tsx";
+import AdminTasks from "./pages/admin/AdminTasks.tsx";
+import AdminWithdrawals from "./pages/admin/AdminWithdrawals.tsx";
+import AdminFinance from "./pages/admin/AdminFinance.tsx";
+import AdminFraud from "./pages/admin/AdminFraud.tsx";
+import AdminResellers from "./pages/admin/AdminResellers.tsx";
+import AdminReports from "./pages/admin/AdminReports.tsx";
+import AdminSettings from "./pages/admin/AdminSettings.tsx";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +43,18 @@ const App = () => (
             <Route path="leaderboard" element={<LeaderboardPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="settings" element={<SettingsPage />} />
+          </Route>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminOverview />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="campaigns" element={<AdminCampaigns />} />
+            <Route path="tasks" element={<AdminTasks />} />
+            <Route path="withdrawals" element={<AdminWithdrawals />} />
+            <Route path="finance" element={<AdminFinance />} />
+            <Route path="fraud" element={<AdminFraud />} />
+            <Route path="resellers" element={<AdminResellers />} />
+            <Route path="reports" element={<AdminReports />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
