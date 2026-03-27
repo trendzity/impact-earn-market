@@ -44,6 +44,18 @@ const App = () => (
             <Route path="profile" element={<ProfilePage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminOverview />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="campaigns" element={<AdminCampaigns />} />
+            <Route path="tasks" element={<AdminTasks />} />
+            <Route path="withdrawals" element={<AdminWithdrawals />} />
+            <Route path="finance" element={<AdminFinance />} />
+            <Route path="fraud" element={<AdminFraud />} />
+            <Route path="resellers" element={<AdminResellers />} />
+            <Route path="reports" element={<AdminReports />} />
+            <Route path="settings" element={<AdminSettings />} />
+          </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
