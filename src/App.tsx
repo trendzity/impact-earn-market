@@ -24,6 +24,14 @@ import AdminFraud from "./pages/admin/AdminFraud.tsx";
 import AdminResellers from "./pages/admin/AdminResellers.tsx";
 import AdminReports from "./pages/admin/AdminReports.tsx";
 import AdminSettings from "./pages/admin/AdminSettings.tsx";
+import BusinessLayout from "./components/business/BusinessLayout.tsx";
+import BusinessHome from "./pages/business/BusinessHome.tsx";
+import BusinessCampaigns from "./pages/business/BusinessCampaigns.tsx";
+import CreateCampaign from "./pages/business/CreateCampaign.tsx";
+import ProofReview from "./pages/business/ProofReview.tsx";
+import BusinessAnalytics from "./pages/business/BusinessAnalytics.tsx";
+import BusinessBilling from "./pages/business/BusinessBilling.tsx";
+import BusinessSettings from "./pages/business/BusinessSettings.tsx";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +51,15 @@ const App = () => (
             <Route path="leaderboard" element={<LeaderboardPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="settings" element={<SettingsPage />} />
+          </Route>
+          <Route path="/business" element={<BusinessLayout />}>
+            <Route index element={<BusinessHome />} />
+            <Route path="campaigns" element={<BusinessCampaigns />} />
+            <Route path="create-campaign" element={<CreateCampaign />} />
+            <Route path="proof-review" element={<ProofReview />} />
+            <Route path="analytics" element={<BusinessAnalytics />} />
+            <Route path="billing" element={<BusinessBilling />} />
+            <Route path="settings" element={<BusinessSettings />} />
           </Route>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminOverview />} />
