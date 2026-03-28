@@ -1,0 +1,130 @@
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Megaphone, IndianRupee, Users, Clock, TrendingUp, ArrowUpRight } from "lucide-react";
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+
+const stats = [
+  { title: "Active Campaigns", value: "8", change: "+2 this week", icon: Megaphone, color: "text-accent" },
+  { title: "Total Spend", value: "₹1,42,500", change: "+₹18K this month", icon: IndianRupee, color: "text-accent" },
+  { title: "Total Engagement", value: "3,847", change: "Tasks completed", icon: Users, color: "text-accent" },
+  { title: "Pending Approvals", value: "126", change: "Awaiting review", icon: Clock, color: "text-accent" },
+];
+
+const performanceData = [
+  { day: "Mon", spend: 2400, engagement: 180 },
+  { day: "Tue", spend: 3200, engagement: 240 },
+  { day: "Wed", spend: 2800, engagement: 210 },
+  { day: "Thu", spend: 4100, engagement: 320 },
+  { day: "Fri", spend: 3600, engagement: 290 },
+  { day: "Sat", spend: 2900, engagement: 220 },
+  { day: "Sun", spend: 3400, engagement: 260 },
+];
+
+const recentActivity = [
+  { action: "Campaign launched", detail: "Instagram Followers Boost", time: "2 min ago", type: "launch" },
+  { action: "Proof approved", detail: "YouTube Review Campaign — 12 tasks", time: "15 min ago", type: "approve" },
+  { action: "Proofs rejected", detail: "Telegram Join — 3 invalid submissions", time: "1 hr ago", type: "reject" },
+  { action: "Funds added", detail: "₹5,000 via UPI", time: "3 hrs ago", type: "fund" },
+  { action: "Campaign completed", detail: "Twitter Retweet Drive", time: "5 hrs ago", type: "complete" },
+];
+
+const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
+const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
+
+const BusinessHome = () => {
+  return (
+    <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+      <motion.div variants={item}>
+        <h1 className="text-2xl font-bold text-foreground">Business Dashboard</h1>
+        <p className="text-sm text-muted-foreground">Overview of your campaigns and performance</p>
+      </motion.div>
+
+      {/* Stats */}
+      <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((s) => (
+          <Card key={s.title} className="border-border/50">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="h-9 w-9 rounded-lg bg-accent/10 flex items-center justify-center">
+                  <s.icon className={`h-4 w-4 ${s.color}`} />
+                </div>
+                <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground" />
+              </div>
+              <p className="text-2xl font-bold text-foreground">{s.value}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{s.change}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </motion.div>
+
+      {/* Charts */}
+      <motion.div variants={item} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card className="border-border/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-foreground">Campaign Spend</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={220}>
+              <AreaChart data={performanceData}>
+                <defs>
+                  <linearGradient id="spendGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(0,85%,50%)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(0,85%,50%)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0,0%,20%)" opacity={0.2} />
+                <XAxis dataKey="day" tick={{ fontSize: 11 }} stroke="hsl(0,0%,45%)" />
+                <YAxis tick={{ fontSize: 11 }} stroke="hsl(0,0%,45%)" />
+                <Tooltip contentStyle={{ background: "hsl(0,0%,10%)", border: "none", borderRadius: 8, color: "#fff", fontSize: 12 }} />
+                <Area type="monotone" dataKey="spend" stroke="hsl(0,85%,50%)" fill="url(#spendGrad)" strokeWidth={2} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-foreground">Engagement</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={performanceData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0,0%,20%)" opacity={0.2} />
+                <XAxis dataKey="day" tick={{ fontSize: 11 }} stroke="hsl(0,0%,45%)" />
+                <YAxis tick={{ fontSize: 11 }} stroke="hsl(0,0%,45%)" />
+                <Tooltip contentStyle={{ background: "hsl(0,0%,10%)", border: "none", borderRadius: 8, color: "#fff", fontSize: 12 }} />
+                <Bar dataKey="engagement" fill="hsl(0,85%,50%)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Recent Activity */}
+      <motion.div variants={item}>
+        <Card className="border-border/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-foreground">Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {recentActivity.map((a, i) => (
+              <div key={i} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
+                <div className="flex items-center gap-3">
+                  <div className={`h-2 w-2 rounded-full ${a.type === "reject" ? "bg-destructive" : a.type === "approve" ? "bg-green-500" : "bg-accent"}`} />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{a.action}</p>
+                    <p className="text-xs text-muted-foreground">{a.detail}</p>
+                  </div>
+                </div>
+                <span className="text-xs text-muted-foreground whitespace-nowrap">{a.time}</span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+export default BusinessHome;
