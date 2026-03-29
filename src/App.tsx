@@ -100,6 +100,17 @@ const App = () => (
             <Route path="portfolio" element={<InfluencerPortfolio />} />
             <Route path="settings" element={<InfluencerSettings />} />
           </Route>
+          <Route path="/reseller" element={<ResellerLayout />}>
+            <Route index element={<ResellerHome />} />
+            <Route path="orders" element={<ResellerOrders />} />
+            <Route path="services" element={<ResellerServices />} />
+            <Route path="pricing" element={<ResellerPricing />} />
+            <Route path="clients" element={<ResellerClients />} />
+            <Route path="wallet" element={<ResellerWallet />} />
+            <Route path="api" element={<ResellerAPI />} />
+            <Route path="whitelabel" element={<ResellerWhitelabel />} />
+            <Route path="settings" element={<ResellerSettings />} />
+          </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
