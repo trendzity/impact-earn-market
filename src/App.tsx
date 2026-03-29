@@ -40,6 +40,16 @@ import InfluencerEarnings from "./pages/influencer/InfluencerEarnings.tsx";
 import InfluencerAnalytics from "./pages/influencer/InfluencerAnalytics.tsx";
 import InfluencerPortfolio from "./pages/influencer/InfluencerPortfolio.tsx";
 import InfluencerSettings from "./pages/influencer/InfluencerSettings.tsx";
+import ResellerLayout from "./components/reseller/ResellerLayout.tsx";
+import ResellerHome from "./pages/reseller/ResellerHome.tsx";
+import ResellerOrders from "./pages/reseller/ResellerOrders.tsx";
+import ResellerServices from "./pages/reseller/ResellerServices.tsx";
+import ResellerPricing from "./pages/reseller/ResellerPricing.tsx";
+import ResellerClients from "./pages/reseller/ResellerClients.tsx";
+import ResellerWallet from "./pages/reseller/ResellerWallet.tsx";
+import ResellerAPI from "./pages/reseller/ResellerAPI.tsx";
+import ResellerWhitelabel from "./pages/reseller/ResellerWhitelabel.tsx";
+import ResellerSettings from "./pages/reseller/ResellerSettings.tsx";
 
 const queryClient = new QueryClient();
 
