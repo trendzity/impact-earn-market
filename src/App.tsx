@@ -32,6 +32,14 @@ import ProofReview from "./pages/business/ProofReview.tsx";
 import BusinessAnalytics from "./pages/business/BusinessAnalytics.tsx";
 import BusinessBilling from "./pages/business/BusinessBilling.tsx";
 import BusinessSettings from "./pages/business/BusinessSettings.tsx";
+import InfluencerLayout from "./components/influencer/InfluencerLayout.tsx";
+import InfluencerHome from "./pages/influencer/InfluencerHome.tsx";
+import BrandDealsPage from "./pages/influencer/BrandDealsPage.tsx";
+import InfluencerCampaigns from "./pages/influencer/InfluencerCampaigns.tsx";
+import InfluencerEarnings from "./pages/influencer/InfluencerEarnings.tsx";
+import InfluencerAnalytics from "./pages/influencer/InfluencerAnalytics.tsx";
+import InfluencerPortfolio from "./pages/influencer/InfluencerPortfolio.tsx";
+import InfluencerSettings from "./pages/influencer/InfluencerSettings.tsx";
 
 const queryClient = new QueryClient();
 
