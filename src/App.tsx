@@ -81,6 +81,15 @@ const App = () => (
             <Route path="reports" element={<AdminReports />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
+          <Route path="/influencer" element={<InfluencerLayout />}>
+            <Route index element={<InfluencerHome />} />
+            <Route path="brand-deals" element={<BrandDealsPage />} />
+            <Route path="campaigns" element={<InfluencerCampaigns />} />
+            <Route path="earnings" element={<InfluencerEarnings />} />
+            <Route path="analytics" element={<InfluencerAnalytics />} />
+            <Route path="portfolio" element={<InfluencerPortfolio />} />
+            <Route path="settings" element={<InfluencerSettings />} />
+          </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
