@@ -40,6 +40,16 @@ import InfluencerEarnings from "./pages/influencer/InfluencerEarnings.tsx";
 import InfluencerAnalytics from "./pages/influencer/InfluencerAnalytics.tsx";
 import InfluencerPortfolio from "./pages/influencer/InfluencerPortfolio.tsx";
 import InfluencerSettings from "./pages/influencer/InfluencerSettings.tsx";
+import ResellerLayout from "./components/reseller/ResellerLayout.tsx";
+import ResellerHome from "./pages/reseller/ResellerHome.tsx";
+import ResellerOrders from "./pages/reseller/ResellerOrders.tsx";
+import ResellerServices from "./pages/reseller/ResellerServices.tsx";
+import ResellerPricing from "./pages/reseller/ResellerPricing.tsx";
+import ResellerClients from "./pages/reseller/ResellerClients.tsx";
+import ResellerWallet from "./pages/reseller/ResellerWallet.tsx";
+import ResellerAPI from "./pages/reseller/ResellerAPI.tsx";
+import ResellerWhitelabel from "./pages/reseller/ResellerWhitelabel.tsx";
+import ResellerSettings from "./pages/reseller/ResellerSettings.tsx";
 
 const queryClient = new QueryClient();
 
@@ -89,6 +99,17 @@ const App = () => (
             <Route path="analytics" element={<InfluencerAnalytics />} />
             <Route path="portfolio" element={<InfluencerPortfolio />} />
             <Route path="settings" element={<InfluencerSettings />} />
+          </Route>
+          <Route path="/reseller" element={<ResellerLayout />}>
+            <Route index element={<ResellerHome />} />
+            <Route path="orders" element={<ResellerOrders />} />
+            <Route path="services" element={<ResellerServices />} />
+            <Route path="pricing" element={<ResellerPricing />} />
+            <Route path="clients" element={<ResellerClients />} />
+            <Route path="wallet" element={<ResellerWallet />} />
+            <Route path="api" element={<ResellerAPI />} />
+            <Route path="whitelabel" element={<ResellerWhitelabel />} />
+            <Route path="settings" element={<ResellerSettings />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
