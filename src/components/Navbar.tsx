@@ -14,13 +14,7 @@ const navLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
-const dashboardLinks = [
-  { label: "Creator Dashboard", href: "/dashboard" },
-  { label: "Business Dashboard", href: "/business" },
-  { label: "Influencer Dashboard", href: "/influencer" },
-  { label: "Reseller Dashboard", href: "/reseller" },
-  { label: "Admin Panel", href: "/admin" },
-];
+const dashboardLinks: { label: string; href: string }[] = [];
 
 const extraLinks = [
   { label: "About Us", href: "/coming-soon" },
