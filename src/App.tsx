@@ -112,6 +112,7 @@ const App = () => (
             <Route path="whitelabel" element={<ResellerWhitelabel />} />
             <Route path="settings" element={<ResellerSettings />} />
           </Route>
+          <Route path="/coming-soon" element={<ComingSoon />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
