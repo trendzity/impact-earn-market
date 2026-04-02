@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import ComingSoon from "./pages/ComingSoon.tsx";
 import DashboardLayout from "./components/dashboard/DashboardLayout.tsx";
 import DashboardHome from "./pages/dashboard/DashboardHome.tsx";
 import TasksPage from "./pages/dashboard/TasksPage.tsx";
@@ -111,6 +112,7 @@ const App = () => (
             <Route path="whitelabel" element={<ResellerWhitelabel />} />
             <Route path="settings" element={<ResellerSettings />} />
           </Route>
+          <Route path="/coming-soon" element={<ComingSoon />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
