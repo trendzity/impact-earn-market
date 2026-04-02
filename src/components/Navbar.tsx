@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
 
 const navLinks = [
@@ -11,6 +12,22 @@ const navLinks = [
   { label: "Campaigns", href: "#campaigns" },
   { label: "Pricing", href: "#pricing" },
   { label: "Contact", href: "#contact" },
+];
+
+const dashboardLinks = [
+  { label: "Creator Dashboard", href: "/dashboard" },
+  { label: "Business Dashboard", href: "/business" },
+  { label: "Influencer Dashboard", href: "/influencer" },
+  { label: "Reseller Dashboard", href: "/reseller" },
+  { label: "Admin Panel", href: "/admin" },
+];
+
+const extraLinks = [
+  { label: "About Us", href: "/coming-soon" },
+  { label: "Blog", href: "/coming-soon" },
+  { label: "Careers", href: "/coming-soon" },
+  { label: "API Docs", href: "/coming-soon" },
+  { label: "Help Center", href: "/coming-soon" },
 ];
 
 const Navbar = () => {
