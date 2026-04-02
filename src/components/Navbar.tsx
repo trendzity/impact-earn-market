@@ -51,34 +51,6 @@ const Navbar = () => {
             </a>
           ))}
 
-          {/* Dashboards Dropdown */}
-          <div className="relative group" onMouseEnter={() => setDashOpen(true)} onMouseLeave={() => setDashOpen(false)}>
-            <button className="flex items-center gap-1 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-300">
-              Dashboards <ChevronDown className="w-3 h-3" />
-            </button>
-            <AnimatePresence>
-              {dashOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute top-full left-0 mt-1 w-52 rounded-xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-xl py-2 z-50"
-                >
-                  {dashboardLinks.map((l) => (
-                    <button
-                      key={l.label}
-                      onClick={() => { navigate(l.href); setDashOpen(false); }}
-                      className="block w-full text-left px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors"
-                    >
-                      {l.label}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
           {/* More Dropdown */}
           <div className="relative group" onMouseEnter={() => setMoreOpen(true)} onMouseLeave={() => setMoreOpen(false)}>
             <button className="flex items-center gap-1 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-300">
