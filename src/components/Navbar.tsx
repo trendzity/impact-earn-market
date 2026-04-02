@@ -117,19 +117,8 @@ const Navbar = () => {
                 </motion.a>
               ))}
 
-              <p className="text-xs text-muted-foreground/60 uppercase tracking-wider mt-4 mb-2">Dashboards</p>
-              {dashboardLinks.map((l, i) => (
-                <motion.button
-                  key={l.label}
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: (navLinks.length + i) * 0.05 }}
-                  className="block w-full text-left py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  onClick={() => { navigate(l.href); setOpen(false); }}
-                >
-                  {l.label}
-                </motion.button>
-              ))}
+
+
 
               <p className="text-xs text-muted-foreground/60 uppercase tracking-wider mt-4 mb-2">More</p>
               {extraLinks.map((l, i) => (
