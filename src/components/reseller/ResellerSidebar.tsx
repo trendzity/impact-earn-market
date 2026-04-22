@@ -9,8 +9,11 @@ import {
   Palette,
   Settings,
   Zap,
+  LogOut,
 } from "lucide-react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { logout } from "@/utils/auth";
+
 import {
   Sidebar,
   SidebarContent,
@@ -40,6 +43,13 @@ export function ResellerSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
 
   return (
     <Sidebar collapsible="icon">
@@ -79,7 +89,18 @@ export function ResellerSidebar() {
                   </SidebarMenuItem>
                 );
               })}
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 text-red-500 hover:text-red-600 hover:bg-red-50/10"
+                >
+                  <LogOut className="h-4 w-4 shrink-0" />
+                  {!collapsed && <span>Logout</span>}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
+
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

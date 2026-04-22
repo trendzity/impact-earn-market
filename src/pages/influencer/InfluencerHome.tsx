@@ -1,9 +1,12 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DollarSign, Handshake, CheckCircle2, Clock, TrendingUp, ArrowUpRight } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Bar, BarChart } from "recharts";
+import { getUser, fetchProfile } from "@/utils/auth";
+import { ProfileOverviewCard } from "@/components/dashboard/ProfileOverviewCard";
 
 const earningsData = [
   { week: "W1", earnings: 2400 },
@@ -51,11 +54,28 @@ const itemVariants = {
 };
 
 const InfluencerHome = () => {
+  const [user] = useState(getUser());
+  const [profileData, setProfileData] = useState<any>(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const data = await fetchProfile();
+      if (data) {
+        setProfileData(data.profile);
+      }
+    };
+    loadProfile();
+  }, []);
+
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
       <motion.div variants={itemVariants}>
         <h1 className="text-2xl font-display font-bold text-foreground">Creator Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Welcome back, Sarah! Here's your performance overview.</p>
+        <p className="text-sm text-muted-foreground">Welcome back! Here's your performance overview.</p>
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <ProfileOverviewCard user={user} profileData={profileData} />
       </motion.div>
 
       {/* Stats Cards */}

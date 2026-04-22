@@ -1,8 +1,11 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { IndianRupee, TrendingUp, ShoppingCart, Users, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { getUser, fetchProfile } from "@/utils/auth";
+import { ProfileOverviewCard } from "@/components/dashboard/ProfileOverviewCard";
 
 const revenueData = [
   { day: "Mon", revenue: 12400, profit: 3100 },
@@ -46,11 +49,28 @@ const fadeUp = {
 };
 
 const ResellerHome = () => {
+  const [user] = useState(getUser());
+  const [profileData, setProfileData] = useState<any>(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const data = await fetchProfile();
+      if (data) {
+        setProfileData(data.profile);
+      }
+    };
+    loadProfile();
+  }, []);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <motion.div {...fadeUp}>
         <h1 className="text-2xl font-bold text-foreground">Reseller Dashboard</h1>
         <p className="text-muted-foreground text-sm">Track revenue, profits, and manage your SMM business.</p>
+      </motion.div>
+
+      <motion.div {...fadeUp}>
+        <ProfileOverviewCard user={user} profileData={profileData} />
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
