@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   TrendingUp,
@@ -15,6 +16,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { getUser, fetchProfile } from "@/utils/auth";
+import { ProfileOverviewCard } from "@/components/dashboard/ProfileOverviewCard";
 
 const stats = [
   { label: "Today's Earnings", value: "₹320", icon: TrendingUp, change: "+12%" },
@@ -46,17 +49,33 @@ const fadeUp = {
 };
 
 const DashboardHome = () => {
+  const [user] = useState(getUser());
+  const [profileData, setProfileData] = useState<any>(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const data = await fetchProfile();
+      if (data) {
+        setProfileData(data.profile);
+      }
+    };
+    loadProfile();
+  }, []);
+
   return (
     <div className="space-y-6 max-w-7xl">
-      {/* Welcome */}
+      {/* Welcome Header */}
       <div>
         <h1 className="text-2xl font-bold font-display text-foreground">
-          Welcome back, <span className="text-accent">Arjun</span> 👋
+          Welcome back, <span className="text-accent">{user?.name || "User"}</span> 👋
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Here's your earning overview for today
         </p>
       </div>
+
+      {/* Profile Identity Card */}
+      <ProfileOverviewCard user={user} profileData={profileData} />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

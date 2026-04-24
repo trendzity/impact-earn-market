@@ -1,9 +1,15 @@
-import { useState } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, X, ChevronDown, LayoutDashboard } from "lucide-react";
+
+
+
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
+import { getUser } from "@/utils/auth";
+
+
 
 const navLinks = [
   { label: "Home", href: "#" },
@@ -29,9 +35,10 @@ const Navbar = () => {
   const [dashOpen, setDashOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const navigate = useNavigate();
+  const user = getUser();
 
   return (
-    <motion.nav 
+    <motion.nav
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -82,10 +89,24 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-2">
           <ThemeToggle />
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={() => navigate("/coming-soon")}>Login</Button>
-          <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow hover:shadow-[0_0_30px_hsl(var(--accent)/0.25)] transition-all duration-300" onClick={() => navigate("/coming-soon")}>
-            Sign Up
-          </Button>
+          {user ? (
+            <Button
+              size="sm"
+              className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow transition-all duration-300"
+              onClick={() => navigate("/dashboard")}
+            >
+              <LayoutDashboard className="w-4 h-4 mr-2" />
+              Dashboard
+            </Button>
+          ) : (
+
+            <>
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={() => navigate("/login")}>Login</Button>
+              <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow hover:shadow-[0_0_30px_hsl(var(--accent)/0.25)] transition-all duration-300" onClick={() => navigate("/signup?mode=signup")}>
+                Sign Up
+              </Button>
+            </>
+          )}
         </div>
 
         <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>
@@ -104,21 +125,18 @@ const Navbar = () => {
           >
             <div className="py-4">
               {navLinks.map((l, i) => (
-                <motion.a 
-                  key={l.label} 
-                  href={l.href} 
+                <motion.a
+                  key={l.label}
+                  href={l.href}
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: i * 0.05 }}
-                  className="block py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors" 
+                  className="block py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   {l.label}
                 </motion.a>
               ))}
-
-
-
 
               <p className="text-xs text-muted-foreground/60 uppercase tracking-wider mt-4 mb-2">More</p>
               {extraLinks.map((l, i) => (
@@ -136,8 +154,21 @@ const Navbar = () => {
 
               <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/30">
                 <ThemeToggle />
-                <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={() => { navigate("/coming-soon"); setOpen(false); }}>Login</Button>
-                <Button size="sm" className="bg-accent text-accent-foreground" onClick={() => { navigate("/coming-soon"); setOpen(false); }}>Sign Up</Button>
+                {user ? (
+                  <Button
+                    size="sm"
+                    className="w-full bg-accent text-accent-foreground"
+                    onClick={() => { navigate("/dashboard"); setOpen(false); }}
+                  >
+                    Dashboard
+                  </Button>
+                ) : (
+
+                  <>
+                    <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={() => { navigate("/login"); setOpen(false); }}>Login</Button>
+                    <Button size="sm" className="bg-accent text-accent-foreground" onClick={() => { navigate("/signup?mode=signup"); setOpen(false); }}>Sign Up</Button>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>

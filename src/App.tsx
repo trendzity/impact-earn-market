@@ -6,6 +6,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ComingSoon from "./pages/ComingSoon.tsx";
+import Login from "./pages/login/Login.tsx";
+import SelectRole from "./pages/login/SelectRole.tsx";
+import Onboarding from "./pages/login/Onboarding.tsx";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute.tsx";
 import DashboardLayout from "./components/dashboard/DashboardLayout.tsx";
 import DashboardHome from "./pages/dashboard/DashboardHome.tsx";
 import TasksPage from "./pages/dashboard/TasksPage.tsx";
@@ -62,58 +66,71 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<DashboardHome />} />
-            <Route path="tasks" element={<TasksPage />} />
-            <Route path="wallet" element={<WalletPage />} />
-            <Route path="referrals" element={<ReferralsPage />} />
-            <Route path="leaderboard" element={<LeaderboardPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="settings" element={<SettingsPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Login />} />
+          <Route path="/auth" element={<Login />} />
+          <Route path="/select-role" element={<SelectRole />} />
+          
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<DashboardHome />} />
+              <Route path="tasks" element={<TasksPage />} />
+              <Route path="wallet" element={<WalletPage />} />
+              <Route path="referrals" element={<ReferralsPage />} />
+              <Route path="leaderboard" element={<LeaderboardPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
+
+            <Route path="/business" element={<BusinessLayout />}>
+              <Route index element={<BusinessHome />} />
+              <Route path="campaigns" element={<BusinessCampaigns />} />
+              <Route path="create-campaign" element={<CreateCampaign />} />
+              <Route path="proof-review" element={<ProofReview />} />
+              <Route path="analytics" element={<BusinessAnalytics />} />
+              <Route path="billing" element={<BusinessBilling />} />
+              <Route path="settings" element={<BusinessSettings />} />
+            </Route>
+
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminOverview />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="campaigns" element={<AdminCampaigns />} />
+              <Route path="tasks" element={<AdminTasks />} />
+              <Route path="withdrawals" element={<AdminWithdrawals />} />
+              <Route path="finance" element={<AdminFinance />} />
+              <Route path="fraud" element={<AdminFraud />} />
+              <Route path="resellers" element={<AdminResellers />} />
+              <Route path="reports" element={<AdminReports />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
+
+            <Route path="/influencer" element={<InfluencerLayout />}>
+              <Route index element={<InfluencerHome />} />
+              <Route path="brand-deals" element={<BrandDealsPage />} />
+              <Route path="campaigns" element={<InfluencerCampaigns />} />
+              <Route path="earnings" element={<InfluencerEarnings />} />
+              <Route path="analytics" element={<InfluencerAnalytics />} />
+              <Route path="portfolio" element={<InfluencerPortfolio />} />
+              <Route path="settings" element={<InfluencerSettings />} />
+            </Route>
+
+            <Route path="/reseller" element={<ResellerLayout />}>
+              <Route index element={<ResellerHome />} />
+              <Route path="orders" element={<ResellerOrders />} />
+              <Route path="services" element={<ResellerServices />} />
+              <Route path="pricing" element={<ResellerPricing />} />
+              <Route path="clients" element={<ResellerClients />} />
+              <Route path="wallet" element={<ResellerWallet />} />
+              <Route path="api" element={<ResellerAPI />} />
+              <Route path="whitelabel" element={<ResellerWhitelabel />} />
+              <Route path="settings" element={<ResellerSettings />} />
+            </Route>
           </Route>
-          <Route path="/business" element={<BusinessLayout />}>
-            <Route index element={<BusinessHome />} />
-            <Route path="campaigns" element={<BusinessCampaigns />} />
-            <Route path="create-campaign" element={<CreateCampaign />} />
-            <Route path="proof-review" element={<ProofReview />} />
-            <Route path="analytics" element={<BusinessAnalytics />} />
-            <Route path="billing" element={<BusinessBilling />} />
-            <Route path="settings" element={<BusinessSettings />} />
-          </Route>
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminOverview />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="campaigns" element={<AdminCampaigns />} />
-            <Route path="tasks" element={<AdminTasks />} />
-            <Route path="withdrawals" element={<AdminWithdrawals />} />
-            <Route path="finance" element={<AdminFinance />} />
-            <Route path="fraud" element={<AdminFraud />} />
-            <Route path="resellers" element={<AdminResellers />} />
-            <Route path="reports" element={<AdminReports />} />
-            <Route path="settings" element={<AdminSettings />} />
-          </Route>
-          <Route path="/influencer" element={<InfluencerLayout />}>
-            <Route index element={<InfluencerHome />} />
-            <Route path="brand-deals" element={<BrandDealsPage />} />
-            <Route path="campaigns" element={<InfluencerCampaigns />} />
-            <Route path="earnings" element={<InfluencerEarnings />} />
-            <Route path="analytics" element={<InfluencerAnalytics />} />
-            <Route path="portfolio" element={<InfluencerPortfolio />} />
-            <Route path="settings" element={<InfluencerSettings />} />
-          </Route>
-          <Route path="/reseller" element={<ResellerLayout />}>
-            <Route index element={<ResellerHome />} />
-            <Route path="orders" element={<ResellerOrders />} />
-            <Route path="services" element={<ResellerServices />} />
-            <Route path="pricing" element={<ResellerPricing />} />
-            <Route path="clients" element={<ResellerClients />} />
-            <Route path="wallet" element={<ResellerWallet />} />
-            <Route path="api" element={<ResellerAPI />} />
-            <Route path="whitelabel" element={<ResellerWhitelabel />} />
-            <Route path="settings" element={<ResellerSettings />} />
-          </Route>
+
           <Route path="/coming-soon" element={<ComingSoon />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

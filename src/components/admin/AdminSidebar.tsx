@@ -1,8 +1,10 @@
 import {
   LayoutDashboard, Users, Megaphone, ListChecks, ArrowDownToLine,
-  Wallet, ShieldAlert, Store, BarChart3, Settings, Zap,
+  Wallet, ShieldAlert, Store, BarChart3, Settings, Zap, LogOut,
 } from "lucide-react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { logout } from "@/utils/auth";
+
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
@@ -26,6 +28,13 @@ export function AdminSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border">
@@ -77,7 +86,18 @@ export function AdminSidebar() {
               {menuItems.slice(6).map((item) => (
                 <MenuItem key={item.title} item={item} collapsed={collapsed} location={location} />
               ))}
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 text-red-500 hover:text-red-600 hover:bg-red-50/10"
+                >
+                  <LogOut className="h-4 w-4 shrink-0" />
+                  {!collapsed && <span>Logout</span>}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
+
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

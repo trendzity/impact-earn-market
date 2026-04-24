@@ -1,8 +1,11 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Megaphone, IndianRupee, Users, Clock, TrendingUp, ArrowUpRight } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { getUser, fetchProfile } from "@/utils/auth";
+import { ProfileOverviewCard } from "@/components/dashboard/ProfileOverviewCard";
 
 const stats = [
   { title: "Active Campaigns", value: "8", change: "+2 this week", icon: Megaphone, color: "text-accent" },
@@ -33,11 +36,28 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } 
 const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 
 const BusinessHome = () => {
+  const [user] = useState(getUser());
+  const [profileData, setProfileData] = useState<any>(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const data = await fetchProfile();
+      if (data) {
+        setProfileData(data.profile);
+      }
+    };
+    loadProfile();
+  }, []);
+
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+    <motion.div variants={container} initial="hidden" animate="show" className="space-y-8">
       <motion.div variants={item}>
         <h1 className="text-2xl font-bold text-foreground">Business Dashboard</h1>
         <p className="text-sm text-muted-foreground">Overview of your campaigns and performance</p>
+      </motion.div>
+
+      <motion.div variants={item}>
+        <ProfileOverviewCard user={user} profileData={profileData} />
       </motion.div>
 
       {/* Stats */}
