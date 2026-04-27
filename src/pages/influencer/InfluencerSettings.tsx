@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Instagram, Youtube, Twitter, Check, Loader2, Save, ArrowLeft } from "lucide-react";
+import { Instagram, Youtube, Twitter, Check, Loader2, Save, ArrowLeft, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getUser, fetchProfile, getToken, getApiUrl } from "@/utils/auth";
 import { toast } from "sonner";
