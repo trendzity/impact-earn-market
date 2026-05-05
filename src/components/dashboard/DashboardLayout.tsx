@@ -1,9 +1,22 @@
+import { useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardTopNav } from "./DashboardTopNav";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import { getUser } from "@/utils/auth";
 
 const DashboardLayout = () => {
+  const navigate = useNavigate();
+  const user = getUser();
+
+  useEffect(() => {
+    if (user?.role === "business") {
+      navigate("/business");
+    } else if (user?.role === "influencer") {
+      navigate("/influencer");
+    }
+  }, [user, navigate]);
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">

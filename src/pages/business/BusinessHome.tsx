@@ -4,15 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Megaphone, IndianRupee, Users, Clock, TrendingUp, ArrowUpRight } from "lucide-react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { getUser, fetchProfile } from "@/utils/auth";
+import { getUser, fetchProfile, getToken, getApiUrl } from "@/utils/auth";
 import { ProfileOverviewCard } from "@/components/dashboard/ProfileOverviewCard";
 
-const stats = [
-  { title: "Active Campaigns", value: "8", change: "+2 this week", icon: Megaphone, color: "text-accent" },
-  { title: "Total Spend", value: "₹1,42,500", change: "+₹18K this month", icon: IndianRupee, color: "text-accent" },
-  { title: "Total Engagement", value: "3,847", change: "Tasks completed", icon: Users, color: "text-accent" },
-  { title: "Pending Approvals", value: "126", change: "Awaiting review", icon: Clock, color: "text-accent" },
-];
+const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
+const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 
 const performanceData = [
   { day: "Mon", spend: 2400, engagement: 180 },
@@ -32,22 +28,64 @@ const recentActivity = [
   { action: "Campaign completed", detail: "Twitter Retweet Drive", time: "5 hrs ago", type: "complete" },
 ];
 
-const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
-const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
-
 const BusinessHome = () => {
   const [user] = useState(getUser());
   const [profileData, setProfileData] = useState<any>(null);
+  const [linkedAccounts, setLinkedAccounts] = useState<any[]>([]);
+  const [dashboardStats, setDashboardStats] = useState<any>(null);
 
   useEffect(() => {
-    const loadProfile = async () => {
+    const loadData = async () => {
       const data = await fetchProfile();
       if (data) {
         setProfileData(data.profile);
       }
+      fetchLinkedAccounts();
+      fetchDashboardStats();
     };
-    loadProfile();
+    loadData();
   }, []);
+
+  const fetchLinkedAccounts = async () => {
+    try {
+      const token = getToken();
+      if (!token) return;
+
+      const response = await fetch(getApiUrl("/auth/linked-accounts"), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setLinkedAccounts(data);
+      }
+    } catch (error) {
+      console.error("Error fetching linked accounts:", error);
+    }
+  };
+
+  const fetchDashboardStats = async () => {
+    try {
+      const token = getToken();
+      if (!token) return;
+
+      const response = await fetch(getApiUrl("/stats/dashboard"), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const result = await response.json();
+        setDashboardStats(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+    }
+  };
+
+  const displayStats = [
+    { title: "Active Campaigns", value: dashboardStats?.activeCampaigns || "0", change: "Current", icon: Megaphone, color: "text-accent" },
+    { title: "Wallet Balance", value: `₹${dashboardStats?.wallet?.balance || 0}`, change: "Available", icon: IndianRupee, color: "text-accent" },
+    { title: "Total Engagement", value: dashboardStats?.totalEngagement || "0", change: "Tasks completed", icon: Users, color: "text-accent" },
+    { title: "Pending Approvals", value: dashboardStats?.pendingApprovals || "0", change: "Awaiting review", icon: Clock, color: "text-accent" },
+  ];
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-8">
@@ -57,12 +95,12 @@ const BusinessHome = () => {
       </motion.div>
 
       <motion.div variants={item}>
-        <ProfileOverviewCard user={user} profileData={profileData} />
+        <ProfileOverviewCard user={user} profileData={profileData} linkedAccounts={linkedAccounts} />
       </motion.div>
 
       {/* Stats */}
       <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((s) => (
+        {displayStats.map((s) => (
           <Card key={s.title} className="border-border/50">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">

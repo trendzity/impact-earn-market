@@ -8,6 +8,7 @@ import {
   Settings,
   Zap,
   LogOut,
+  Building2,
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "@/utils/auth";
@@ -27,6 +28,7 @@ import {
 
 const menuItems = [
   { title: "Dashboard", url: "/business", icon: LayoutDashboard },
+  { title: "Brand Profile", url: "/business/profile", icon: Building2 },
   { title: "Campaigns", url: "/business/campaigns", icon: Megaphone },
   { title: "Create Campaign", url: "/business/create-campaign", icon: PlusCircle },
   { title: "Proof Review", url: "/business/proof-review", icon: ClipboardCheck },

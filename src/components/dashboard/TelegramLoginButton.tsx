@@ -1,0 +1,63 @@
+import { useEffect, useRef } from 'react';
+
+interface TelegramUser {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+  auth_date: number;
+  hash: string;
+}
+
+interface TelegramLoginButtonProps {
+  botName: string;
+  onAuth: (user: TelegramUser) => void;
+  buttonSize?: 'large' | 'medium' | 'small';
+  cornerRadius?: number;
+  requestAccess?: string;
+  usePic?: boolean;
+}
+
+export const TelegramLoginButton = ({
+  botName,
+  onAuth,
+  buttonSize = 'large',
+  cornerRadius,
+  requestAccess = 'write',
+  usePic = true,
+}: TelegramLoginButtonProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Create script element
+    const script = document.createElement('script');
+    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+    script.setAttribute('data-telegram-login', botName);
+    script.setAttribute('data-size', buttonSize);
+    if (cornerRadius) script.setAttribute('data-radius', cornerRadius.toString());
+    script.setAttribute('data-request-access', requestAccess);
+    script.setAttribute('data-userpic', usePic.toString());
+    
+    // Create callback function on window
+    const callbackName = `onTelegramAuth_${Math.random().toString(36).substring(7)}`;
+    (window as any)[callbackName] = (user: TelegramUser) => {
+      onAuth(user);
+    };
+    script.setAttribute('data-onauth', `${callbackName}(user)`);
+    script.async = true;
+
+    // Append to container
+    if (containerRef.current) {
+      containerRef.current.innerHTML = '';
+      containerRef.current.appendChild(script);
+    }
+
+    return () => {
+      // Clean up callback
+      delete (window as any)[callbackName];
+    };
+  }, [botName, onAuth, buttonSize, cornerRadius, requestAccess, usePic]);
+
+  return <div ref={containerRef} className="telegram-login-button" />;
+};

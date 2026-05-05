@@ -12,12 +12,18 @@ import {
   Trophy,
   Star,
   Flame,
+  LayoutDashboard,
+  Users,
+  Eye,
+  Video,
+  Facebook,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { getUser, fetchProfile } from "@/utils/auth";
+import { getUser, fetchProfile, getToken, getApiUrl } from "@/utils/auth";
 import { ProfileOverviewCard } from "@/components/dashboard/ProfileOverviewCard";
+import { toast } from "sonner";
 
 const stats = [
   { label: "Today's Earnings", value: "₹320", icon: TrendingUp, change: "+12%" },
@@ -48,19 +54,86 @@ const fadeUp = {
   }),
 };
 
+
 const DashboardHome = () => {
   const [user] = useState(getUser());
   const [profileData, setProfileData] = useState<any>(null);
+  const [linkedAccounts, setLinkedAccounts] = useState<any[]>([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(true);
+  const [dashboardStats, setDashboardStats] = useState<any>(null);
 
   useEffect(() => {
-    const loadProfile = async () => {
-      const data = await fetchProfile();
-      if (data) {
-        setProfileData(data.profile);
+    const loadData = async () => {
+      const profile = await fetchProfile();
+      if (profile) {
+        setProfileData(profile.profile);
       }
+      fetchLinkedAccounts();
+      fetchDashboardStats();
     };
-    loadProfile();
+    loadData();
   }, []);
+
+  const fetchDashboardStats = async () => {
+    try {
+      const token = getToken();
+      if (!token) return;
+
+      const response = await fetch(getApiUrl("/stats/dashboard"), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const result = await response.json();
+        setDashboardStats(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+    }
+  };
+
+  const fetchLinkedAccounts = async () => {
+    try {
+      const token = getToken();
+      if (!token) return;
+
+      const response = await fetch(getApiUrl("/auth/linked-accounts"), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setLinkedAccounts(data);
+      }
+    } catch (error) {
+      console.error("Error fetching linked accounts:", error);
+    } finally {
+      setLoadingAccounts(false);
+    }
+  };
+
+  // Map real data to display stats
+  const displayStats = [
+    { label: "Today's Earnings", value: `₹${dashboardStats?.todayEarnings || 0}`, icon: TrendingUp, change: "+0%" },
+    { label: "Total Earnings", value: `₹${dashboardStats?.wallet?.balance || 0}`, icon: Wallet, change: "+0%" },
+    { label: "Pending Earnings", value: `₹${dashboardStats?.pendingEarnings || 0}`, icon: Clock, change: "0 tasks" },
+    { label: "Tasks Completed", value: dashboardStats?.completedTasks || 0, icon: Target, change: "This month" },
+  ];
+
+  const youtubeAccount = linkedAccounts.find(acc => acc.platform === "youtube");
+  const ytStats = youtubeAccount?.stats;
+
+  const instagramAccount = linkedAccounts.find(acc => acc.platform === "instagram");
+  const igStats = instagramAccount?.stats;
+
+  const facebookAccount = linkedAccounts.find(acc => acc.platform === "facebook");
+  const fbStats = facebookAccount?.stats;
+
+  const formatNumber = (num: string | number) => {
+    const n = typeof num === "string" ? parseFloat(num) : num;
+    if (isNaN(n)) return "0";
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
+    if (n >= 1000) return (n / 1000).toFixed(1) + "K";
+    return n.toString();
+  };
 
   return (
     <div className="space-y-6 max-w-7xl">
@@ -75,11 +148,117 @@ const DashboardHome = () => {
       </div>
 
       {/* Profile Identity Card */}
-      <ProfileOverviewCard user={user} profileData={profileData} />
+      <ProfileOverviewCard user={user} profileData={profileData} linkedAccounts={linkedAccounts} />
+
+      {/* YouTube Channel Insights (Only if connected) */}
+      {youtubeAccount && (
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <Card className="border border-red-500/20 bg-gradient-to-br from-red-500/5 via-transparent to-transparent overflow-hidden">
+            <CardHeader className="pb-2 border-b border-border/50 flex flex-row items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Youtube className="h-5 w-5 text-red-500" />
+                <CardTitle className="text-sm font-bold uppercase tracking-wider">Channel Insights: {ytStats?.channelName}</CardTitle>
+              </div>
+              <span className="text-[10px] text-muted-foreground">Updated: {ytStats?.lastUpdated ? new Date(ytStats.lastUpdated).toLocaleDateString() : 'Just now'}</span>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border/50">
+                <div className="p-4 flex flex-col items-center justify-center text-center">
+                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                    <Users className="h-3 w-3" />
+                    <span className="text-xs uppercase font-medium">Subscribers</span>
+                  </div>
+                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(ytStats?.subscribers || 0)}</p>
+                </div>
+                <div className="p-4 flex flex-col items-center justify-center text-center">
+                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                    <Eye className="h-3 w-3" />
+                    <span className="text-xs uppercase font-medium">Total Views</span>
+                  </div>
+                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(ytStats?.views || 0)}</p>
+                </div>
+                <div className="p-4 flex flex-col items-center justify-center text-center">
+                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                    <Video className="h-3 w-3" />
+                    <span className="text-xs uppercase font-medium">Videos</span>
+                  </div>
+                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(ytStats?.videos || 0)}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* Instagram Profile Insights (Only if connected) */}
+      {instagramAccount && (
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <Card className="border border-pink-500/20 bg-gradient-to-br from-pink-500/5 via-transparent to-transparent overflow-hidden mt-4">
+            <CardHeader className="pb-2 border-b border-border/50 flex flex-row items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Instagram className="h-5 w-5 text-pink-500" />
+                <CardTitle className="text-sm font-bold uppercase tracking-wider">Instagram Insights: @{igStats?.username}</CardTitle>
+              </div>
+              <span className="text-[10px] text-muted-foreground">Updated: {igStats?.lastUpdated ? new Date(igStats.lastUpdated).toLocaleDateString() : 'Just now'}</span>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border/50">
+                <div className="p-4 flex flex-col items-center justify-center text-center">
+                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                    <Users className="h-3 w-3" />
+                    <span className="text-xs uppercase font-medium">Followers</span>
+                  </div>
+                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(igStats?.followersCount || 0)}</p>
+                </div>
+                <div className="p-4 flex flex-col items-center justify-center text-center">
+                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                    <Video className="h-3 w-3" />
+                    <span className="text-xs uppercase font-medium">Media Posts</span>
+                  </div>
+                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(igStats?.mediaCount || 0)}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* Facebook Page Insights (Only if connected) */}
+      {facebookAccount && (
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <Card className="border border-blue-500/20 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent overflow-hidden mt-4">
+            <CardHeader className="pb-2 border-b border-border/50 flex flex-row items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Facebook className="h-5 w-5 text-blue-600" />
+                <CardTitle className="text-sm font-bold uppercase tracking-wider">Facebook Insights: {fbStats?.pageName}</CardTitle>
+              </div>
+              <span className="text-[10px] text-muted-foreground">Updated: {fbStats?.lastUpdated ? new Date(fbStats.lastUpdated).toLocaleDateString() : 'Just now'}</span>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border/50">
+                <div className="p-4 flex flex-col items-center justify-center text-center">
+                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                    <Users className="h-3 w-3" />
+                    <span className="text-xs uppercase font-medium">Followers</span>
+                  </div>
+                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(fbStats?.followersCount || 0)}</p>
+                </div>
+                <div className="p-4 flex flex-col items-center justify-center text-center">
+                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                    <TrendingUp className="h-3 w-3" />
+                    <span className="text-xs uppercase font-medium">Page Likes</span>
+                  </div>
+                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(fbStats?.likesCount || 0)}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, i) => (
+        {displayStats.map((stat, i) => (
           <motion.div
             key={stat.label}
             custom={i}
