@@ -37,6 +37,7 @@ import ProofReview from "./pages/business/ProofReview.tsx";
 import BusinessAnalytics from "./pages/business/BusinessAnalytics.tsx";
 import BusinessBilling from "./pages/business/BusinessBilling.tsx";
 import BusinessSettings from "./pages/business/BusinessSettings.tsx";
+import BusinessProfile from "./pages/business/BusinessProfile.tsx";
 import InfluencerLayout from "./components/influencer/InfluencerLayout.tsx";
 import InfluencerHome from "./pages/influencer/InfluencerHome.tsx";
 import BrandDealsPage from "./pages/influencer/BrandDealsPage.tsx";
@@ -92,6 +93,7 @@ const App = () => (
               <Route path="analytics" element={<BusinessAnalytics />} />
               <Route path="billing" element={<BusinessBilling />} />
               <Route path="settings" element={<BusinessSettings />} />
+              <Route path="profile" element={<BusinessProfile />} />
             </Route>
 
             <Route path="/admin" element={<AdminLayout />}>

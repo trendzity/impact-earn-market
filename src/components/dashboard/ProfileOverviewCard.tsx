@@ -1,29 +1,52 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { User, Mail, Instagram, Youtube, MessageCircle, Star, ShieldCheck } from "lucide-react";
+import { User, Mail, Instagram, Youtube, Facebook, MessageCircle, Star, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface ProfileOverviewCardProps {
   user: any;
   profileData: any;
+  linkedAccounts?: any[];
 }
 
-export const ProfileOverviewCard = ({ user, profileData }: ProfileOverviewCardProps) => {
+export const ProfileOverviewCard = ({ user, profileData, linkedAccounts = [] }: ProfileOverviewCardProps) => {
   const getSocialIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
       case 'instagram': return <Instagram className="h-3 w-3 text-pink-500" />;
+      case 'facebook': return <Facebook className="h-3 w-3 text-blue-600" />;
       case 'youtube': return <Youtube className="h-3 w-3 text-red-500" />;
       case 'telegram': return <MessageCircle className="h-3 w-3 text-blue-500" />;
       default: return <Star className="h-3 w-3 text-accent" />;
     }
   };
 
-  // Extract handles from profileData
-  const handles = [
-    { platform: 'Instagram', value: profileData?.socialHandle || profileData?.instagram },
-    { platform: 'YouTube', value: profileData?.youtube },
-    { platform: 'Company', value: profileData?.companyName },
-  ].filter(h => h.value);
+  // Only show real linked accounts (YouTube, etc.)
+  const handles: any[] = [];
+  
+  linkedAccounts.forEach(acc => {
+    // If it's YouTube, show the channel name if available
+    if (acc.platform === 'youtube') {
+      handles.push({ 
+        platform: 'YouTube', 
+        value: acc.stats?.channelName || acc.accountId || 'YouTube connected' 
+      });
+    } else if (acc.platform === 'instagram') {
+      handles.push({ 
+        platform: 'Instagram', 
+        value: acc.stats?.username || acc.accountId || 'Instagram connected' 
+      });
+    } else if (acc.platform === 'facebook') {
+      handles.push({ 
+        platform: 'Facebook', 
+        value: acc.stats?.pageName || acc.accountId || 'Facebook connected' 
+      });
+    } else {
+      handles.push({ platform: acc.platform, value: 'Connected' });
+    }
+  });
+
+  // Unique by platform to avoid duplicates
+  const uniqueHandles = Array.from(new Map(handles.map(h => [h.platform, h])).values());
 
   return (
     <motion.div 
@@ -68,8 +91,8 @@ export const ProfileOverviewCard = ({ user, profileData }: ProfileOverviewCardPr
               <div className="text-xs font-semibold text-muted-foreground uppercase tracking-widest w-full mb-1">
                 Connected Presence
               </div>
-              {handles.length > 0 ? (
-                handles.map((h, i) => (
+              {uniqueHandles.length > 0 ? (
+                uniqueHandles.map((h, i) => (
                   <div 
                     key={i} 
                     className="flex items-center gap-2 bg-muted/50 border border-border/50 px-3 py-1.5 rounded-xl hover:bg-muted transition-colors"

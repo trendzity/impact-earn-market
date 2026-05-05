@@ -93,7 +93,10 @@ const Navbar = () => {
             <Button
               size="sm"
               className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow transition-all duration-300"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => {
+                const target = user.role === "business" ? "/business" : user.role === "influencer" ? "/influencer" : "/dashboard";
+                navigate(target);
+              }}
             >
               <LayoutDashboard className="w-4 h-4 mr-2" />
               Dashboard
@@ -158,7 +161,11 @@ const Navbar = () => {
                   <Button
                     size="sm"
                     className="w-full bg-accent text-accent-foreground"
-                    onClick={() => { navigate("/dashboard"); setOpen(false); }}
+                    onClick={() => { 
+                      const target = user.role === "business" ? "/business" : user.role === "influencer" ? "/influencer" : "/dashboard";
+                      navigate(target); 
+                      setOpen(false); 
+                    }}
                   >
                     Dashboard
                   </Button>
