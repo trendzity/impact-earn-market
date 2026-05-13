@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Users, Megaphone, ListChecks, ArrowDownToLine,
-  Wallet, ShieldAlert, Store, BarChart3, Settings, Zap, LogOut,
+  Wallet, ShieldAlert, Store, BarChart3, Settings, Zap, LogOut, ArrowUpDown
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "@/utils/auth";
@@ -18,6 +18,7 @@ const menuItems = [
   { title: "Tasks & Submissions", url: "/admin/tasks", icon: ListChecks },
   { title: "Withdrawals", url: "/admin/withdrawals", icon: ArrowDownToLine },
   { title: "Wallet & Finance", url: "/admin/finance", icon: Wallet },
+  { title: "Transaction Ledger", url: "/admin/transactions", icon: ArrowUpDown },
   { title: "Fraud & Risk", url: "/admin/fraud", icon: ShieldAlert },
   { title: "Resellers", url: "/admin/resellers", icon: Store },
   { title: "Reports & Analytics", url: "/admin/reports", icon: BarChart3 },
@@ -72,7 +73,7 @@ export function AdminSidebar() {
           <SidebarGroupLabel>Management</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.slice(1, 6).map((item) => (
+              {menuItems.slice(1, 7).map((item) => (
                 <MenuItem key={item.title} item={item} collapsed={collapsed} location={location} />
               ))}
             </SidebarMenu>
@@ -83,7 +84,7 @@ export function AdminSidebar() {
           <SidebarGroupLabel>Operations</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.slice(6).map((item) => (
+              {menuItems.slice(7).map((item) => (
                 <MenuItem key={item.title} item={item} collapsed={collapsed} location={location} />
               ))}
               

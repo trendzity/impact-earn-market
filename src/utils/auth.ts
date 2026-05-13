@@ -27,6 +27,21 @@ export const getApiUrl = (endpoint: string) => {
   return `${base}${path}`;
 };
 
+export const getServerUrl = (endpoint: string) => {
+  if (!endpoint) return "";
+  // If it's already a full URL or a Data URL (Base64), return it as is
+  if (endpoint.startsWith('http') || endpoint.startsWith('data:')) {
+    return endpoint;
+  }
+  
+  // Removes /api from the base URL to get the root server URL
+  const base = API_BASE_URL.replace("/api", "").endsWith('/') 
+    ? API_BASE_URL.replace("/api", "").slice(0, -1) 
+    : API_BASE_URL.replace("/api", "");
+  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  return `${base}${path}`;
+};
+
 export const saveUser = (user: UserData) => {
   const userStr = JSON.stringify(user);
   localStorage.setItem(USER_KEY, userStr);

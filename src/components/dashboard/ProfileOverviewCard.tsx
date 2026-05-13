@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { User, Mail, Instagram, Youtube, Facebook, MessageCircle, Star, ShieldCheck } from "lucide-react";
+import { User, Mail, Instagram, Youtube, Facebook, MessageCircle, Star, ShieldCheck, Linkedin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface ProfileOverviewCardProps {
@@ -16,6 +16,7 @@ export const ProfileOverviewCard = ({ user, profileData, linkedAccounts = [] }: 
       case 'facebook': return <Facebook className="h-3 w-3 text-blue-600" />;
       case 'youtube': return <Youtube className="h-3 w-3 text-red-500" />;
       case 'telegram': return <MessageCircle className="h-3 w-3 text-blue-500" />;
+      case 'linkedin': return <Linkedin className="h-3 w-3 text-blue-700" />;
       default: return <Star className="h-3 w-3 text-accent" />;
     }
   };
@@ -39,6 +40,11 @@ export const ProfileOverviewCard = ({ user, profileData, linkedAccounts = [] }: 
       handles.push({ 
         platform: 'Facebook', 
         value: acc.stats?.pageName || acc.accountId || 'Facebook connected' 
+      });
+    } else if (acc.platform === 'linkedin') {
+      handles.push({ 
+        platform: 'LinkedIn', 
+        value: acc.stats?.fullName || acc.accountId || 'LinkedIn connected' 
       });
     } else {
       handles.push({ platform: acc.platform, value: 'Connected' });

@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Eye, Pause, Pencil, Play, Loader2 } from "lucide-react";
 import { getToken, getApiUrl } from "@/utils/auth";
+import { toast } from "sonner";
 
 const statusColor: Record<string, string> = {
   active: "bg-green-500/10 text-green-500 border-green-500/20",
@@ -19,6 +20,7 @@ const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 const BusinessCampaigns = () => {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCampaigns();
@@ -40,6 +42,36 @@ const BusinessCampaigns = () => {
       console.error("Error fetching campaigns:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdateLink = async (campaignId: string, currentLink: string) => {
+    const newLink = prompt("Enter the correct social media post link:", currentLink || "");
+    if (!newLink || newLink === currentLink) return;
+
+    try {
+      setUpdatingId(campaignId);
+      const token = getToken();
+      const response = await fetch(getApiUrl(`/campaigns/${campaignId}/update-link`), {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ link: newLink })
+      });
+
+      if (response.ok) {
+        toast.success("Target link updated successfully!");
+        fetchCampaigns(); // Refresh the list
+      } else {
+        toast.error("Failed to update link.");
+      }
+    } catch (err) {
+      console.error("Error updating link:", err);
+      toast.error("An error occurred.");
+    } finally {
+      setUpdatingId(null);
     }
   };
 
@@ -92,6 +124,7 @@ const BusinessCampaigns = () => {
                     <TableHead>Platform</TableHead>
                     <TableHead>Budget</TableHead>
                     <TableHead>Reward</TableHead>
+                    <TableHead>Target Link</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -106,15 +139,33 @@ const BusinessCampaigns = () => {
                       <TableCell className="text-muted-foreground">₹{c.budget}</TableCell>
                       <TableCell className="text-muted-foreground">₹{c.reward}</TableCell>
                       <TableCell>
+                        {c.link ? (
+                          <a href={c.link} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline text-xs truncate max-w-[150px] block">
+                            {c.link}
+                          </a>
+                        ) : (
+                          <span className="text-red-500 text-[10px] font-bold">LINK MISSING</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
                         <Badge className={`text-xs border capitalize ${statusColor[c.status.toLowerCase()]}`}>{c.status}</Badge>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7"><Eye className="h-3.5 w-3.5" /></Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" title="View Details"><Eye className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" title="Pause/Play">
                             {c.status.toLowerCase() === "paused" ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7"><Pencil className="h-3.5 w-3.5" /></Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-7 w-7" 
+                            title="Update Target Link"
+                            disabled={updatingId === c.id}
+                            onClick={() => handleUpdateLink(c.id, c.link)}
+                          >
+                            {updatingId === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Pencil className="h-3.5 w-3.5" />}
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>

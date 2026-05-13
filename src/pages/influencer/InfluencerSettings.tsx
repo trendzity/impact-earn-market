@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Instagram, Youtube, Twitter, Facebook, Check, Loader2, Save, ArrowLeft, Star, MessageCircle } from "lucide-react";
+import { Instagram, Youtube, Twitter, Facebook, Check, Loader2, Save, ArrowLeft, Star, MessageCircle, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getUser, fetchProfile, getToken, getApiUrl } from "@/utils/auth";
 import { toast } from "sonner";
@@ -131,6 +131,9 @@ const InfluencerSettings = () => {
     } else if (platform === "Facebook") {
       const token = getToken();
       window.location.href = `${getApiUrl("/auth/facebook-link")}?token=${token}`;
+    } else if (platform === "LinkedIn") {
+      const token = getToken();
+      window.location.href = `${getApiUrl("/auth/linkedin")}?token=${token}`;
     } else {
       toast.info(`${platform} connection coming soon!`);
     }
@@ -207,6 +210,9 @@ const InfluencerSettings = () => {
         }
         return acc.stats.username ? `@${acc.stats.username}` : "Connected";
       }
+      if (platform.toLowerCase() === 'linkedin') {
+        return acc.stats?.fullName ? acc.stats.fullName : "Connected";
+      }
     }
     
     return acc ? "Connected" : "Not Linked";
@@ -216,6 +222,7 @@ const InfluencerSettings = () => {
     { platform: "Instagram", icon: Instagram, color: "text-pink-500" },
     { platform: "Facebook", icon: Facebook, color: "text-blue-600" },
     { platform: "YouTube", icon: Youtube, color: "text-red-500" },
+    { platform: "LinkedIn", icon: Linkedin, color: "text-blue-700" },
     { platform: "Telegram", icon: MessageCircle, color: "text-blue-500" },
     { platform: "Twitter/X", icon: Twitter, color: "text-blue-400" },
   ];

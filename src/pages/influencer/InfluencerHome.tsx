@@ -11,11 +11,13 @@ import {
   TrendingUp,
   ArrowUpRight,
   Youtube,
+  Star,
   Users,
   Eye,
   Video,
   Instagram,
   Facebook,
+  Linkedin,
 } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Bar, BarChart } from "recharts";
 import { getUser, fetchProfile, getToken, getApiUrl } from "@/utils/auth";
@@ -47,13 +49,6 @@ const recentActivity = [
   { type: "payment", text: "Payment of ₹3,200 credited", time: "3 hrs ago", color: "bg-blue-500" },
   { type: "deal", text: "FitBrand sent collaboration request", time: "5 hrs ago", color: "bg-accent" },
   { type: "completed", text: "Completed 'Tech Review' campaign", time: "1 day ago", color: "bg-green-500" },
-];
-
-const stats = [
-  { label: "Total Earnings", value: "₹1,84,500", icon: DollarSign, change: "+18%" },
-  { label: "Active Deals", value: "7", icon: Handshake, change: "+3" },
-  { label: "Completed Campaigns", value: "42", icon: CheckCircle2, change: "+5" },
-  { label: "Pending Payments", value: "₹12,400", icon: Clock, change: "2 pending" },
 ];
 
 const containerVariants = {
@@ -135,12 +130,29 @@ const InfluencerHome = () => {
   const facebookAccount = linkedAccounts.find(acc => acc.platform === "facebook");
   const fbStats = facebookAccount?.stats;
 
+  const linkedinAccount = linkedAccounts.find(acc => acc.platform === "linkedin");
+  const liStats = linkedinAccount?.stats;
+
   const formatNumber = (num: string | number) => {
     const n = typeof num === "string" ? parseFloat(num) : num;
     if (isNaN(n)) return "0";
     if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
     if (n >= 1000) return (n / 1000).toFixed(1) + "K";
     return n.toString();
+  };
+
+  const timeAgo = (date: string) => {
+    const now = new Date();
+    const then = new Date(date);
+    const diff = now.getTime() - then.getTime();
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days}d ago`;
+    if (hours > 0) return `${hours}h ago`;
+    if (minutes > 0) return `${minutes}m ago`;
+    return "Just now";
   };
 
   return (
@@ -154,111 +166,92 @@ const InfluencerHome = () => {
         <ProfileOverviewCard user={user} profileData={profileData} linkedAccounts={linkedAccounts} />
       </motion.div>
 
-      {/* YouTube Channel Insights (Only if connected) */}
-      {youtubeAccount && (
-        <motion.div variants={itemVariants}>
-          <Card className="border border-red-500/20 bg-gradient-to-br from-red-500/5 via-transparent to-transparent overflow-hidden">
-            <CardHeader className="pb-2 border-b border-border/50 flex flex-row items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Youtube className="h-5 w-5 text-red-500" />
-                <CardTitle className="text-sm font-bold uppercase tracking-wider">Channel Insights: {ytStats?.channelName}</CardTitle>
+      {/* Social Insights Grid (Neat Cards) */}
+      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {youtubeAccount && (
+          <Card className="border border-red-500/20 bg-gradient-to-br from-red-500/5 to-transparent">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Youtube className="h-4 w-4 text-red-500" />
+                <span className="text-xs font-bold uppercase tracking-wider">YouTube</span>
               </div>
-              <span className="text-[10px] text-muted-foreground">Updated: {ytStats?.lastUpdated ? new Date(ytStats.lastUpdated).toLocaleDateString() : 'Just now'}</span>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border/50">
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Users className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Subscribers</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(ytStats?.subscribers || 0)}</p>
+              <div className="flex justify-between items-end">
+                <div>
+                  <p className="text-xl font-black">{formatNumber(ytStats?.subscribers || 0)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Subscribers</p>
                 </div>
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Eye className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Total Views</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(ytStats?.views || 0)}</p>
-                </div>
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Video className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Videos</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(ytStats?.videos || 0)}</p>
+                <div className="text-right">
+                  <p className="text-sm font-bold">{formatNumber(ytStats?.views || 0)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Total Views</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
-      )}
+        )}
 
-      {/* Instagram Profile Insights (Only if connected) */}
-      {instagramAccount && (
-        <motion.div variants={itemVariants}>
-          <Card className="border border-pink-500/20 bg-gradient-to-br from-pink-500/5 via-transparent to-transparent overflow-hidden mt-4">
-            <CardHeader className="pb-2 border-b border-border/50 flex flex-row items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Instagram className="h-5 w-5 text-pink-500" />
-                <CardTitle className="text-sm font-bold uppercase tracking-wider">Instagram Insights: @{igStats?.username}</CardTitle>
+        {instagramAccount && (
+          <Card className="border border-pink-500/20 bg-gradient-to-br from-pink-500/5 to-transparent">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Instagram className="h-4 w-4 text-pink-500" />
+                <span className="text-xs font-bold uppercase tracking-wider">Instagram</span>
               </div>
-              <span className="text-[10px] text-muted-foreground">Updated: {igStats?.lastUpdated ? new Date(igStats.lastUpdated).toLocaleDateString() : 'Just now'}</span>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border/50">
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Users className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Followers</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(igStats?.followersCount || 0)}</p>
+              <div className="flex justify-between items-end">
+                <div>
+                  <p className="text-xl font-black">{formatNumber(igStats?.followersCount || 0)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Followers</p>
                 </div>
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Video className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Media Posts</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(igStats?.mediaCount || 0)}</p>
+                <div className="text-right">
+                  <p className="text-sm font-bold">{formatNumber(igStats?.mediaCount || 0)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Posts</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
-      )}
+        )}
 
-      {/* Facebook Page Insights (Only if connected) */}
-      {facebookAccount && (
-        <motion.div variants={itemVariants}>
-          <Card className="border border-blue-500/20 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent overflow-hidden mt-4">
-            <CardHeader className="pb-2 border-b border-border/50 flex flex-row items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Facebook className="h-5 w-5 text-blue-600" />
-                <CardTitle className="text-sm font-bold uppercase tracking-wider">Facebook Insights: {fbStats?.pageName}</CardTitle>
+        {facebookAccount && (
+          <Card className="border border-blue-600/20 bg-gradient-to-br from-blue-600/5 to-transparent">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Facebook className="h-4 w-4 text-blue-600" />
+                <span className="text-xs font-bold uppercase tracking-wider">Facebook</span>
               </div>
-              <span className="text-[10px] text-muted-foreground">Updated: {fbStats?.lastUpdated ? new Date(fbStats.lastUpdated).toLocaleDateString() : 'Just now'}</span>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border/50">
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Users className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Followers</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(fbStats?.followersCount || 0)}</p>
+              <div className="flex justify-between items-end">
+                <div>
+                  <p className="text-xl font-black">{formatNumber(fbStats?.followersCount || 0)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Followers</p>
                 </div>
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <TrendingUp className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Page Likes</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(fbStats?.likesCount || 0)}</p>
+                <div className="text-right">
+                  <p className="text-sm font-bold">{formatNumber(fbStats?.likesCount || 0)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Page Likes</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
-      )}
+        )}
+
+        {linkedinAccount && (
+          <Card className="border border-blue-700/20 bg-gradient-to-br from-blue-700/5 to-transparent">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Linkedin className="h-4 w-4 text-blue-700" />
+                <span className="text-xs font-bold uppercase tracking-wider">LinkedIn</span>
+              </div>
+              <div className="flex justify-between items-end">
+                <div>
+                  <p className="text-xl font-black">{formatNumber(liStats?.followers || 506)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Followers</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold">{liStats?.connections || "448"}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Connections</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </motion.div>
 
       {/* Stats Cards */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -340,13 +333,19 @@ const InfluencerHome = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {recentActivity.map((activity, i) => (
-                <div key={i} className="flex items-center gap-3 py-2 border-b border-border last:border-0">
-                  <div className={`h-2 w-2 rounded-full ${activity.color} shrink-0`} />
-                  <p className="text-sm text-foreground flex-1">{activity.text}</p>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">{activity.time}</span>
+              {dashboardStats?.activities?.length > 0 ? (
+                dashboardStats.activities.map((activity: any, i: number) => (
+                  <div key={i} className="flex items-center gap-3 py-2 border-b border-border last:border-0">
+                    <div className={`h-2 w-2 rounded-full ${activity.color} shrink-0`} />
+                    <p className="text-sm text-foreground flex-1">{activity.text}</p>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">{timeAgo(activity.time)}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-6 text-sm text-muted-foreground italic">
+                  No recent activity found.
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>

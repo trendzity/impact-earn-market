@@ -166,18 +166,24 @@ const BusinessHome = () => {
             <CardTitle className="text-sm font-medium text-foreground">Recent Activity</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {recentActivity.map((a, i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
-                <div className="flex items-center gap-3">
-                  <div className={`h-2 w-2 rounded-full ${a.type === "reject" ? "bg-destructive" : a.type === "approve" ? "bg-green-500" : "bg-accent"}`} />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{a.action}</p>
-                    <p className="text-xs text-muted-foreground">{a.detail}</p>
+            {!dashboardStats?.activities || dashboardStats.activities.length === 0 ? (
+              <p className="text-xs text-muted-foreground italic py-4">No recent activity to show.</p>
+            ) : (
+              dashboardStats.activities.map((a: any, i: number) => (
+                <div key={i} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
+                  <div className="flex items-center gap-3">
+                    <div className={`h-2 w-2 rounded-full ${a.color || 'bg-accent'}`} />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{a.text}</p>
+                      <p className="text-xs text-muted-foreground">{a.detail}</p>
+                    </div>
                   </div>
+                  <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                    {new Date(a.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
                 </div>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{a.time}</span>
-              </div>
-            ))}
+              ))
+            )}
           </CardContent>
         </Card>
       </motion.div>

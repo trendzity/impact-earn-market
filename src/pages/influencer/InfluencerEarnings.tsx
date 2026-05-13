@@ -1,30 +1,69 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DollarSign, TrendingUp, Clock, ArrowDownRight } from "lucide-react";
-
-const transactions = [
-  { date: "Jun 20, 2026", brand: "StyleCo Fashion", campaign: "Summer Launch", amount: 5000, status: "Credited" },
-  { date: "Jun 18, 2026", brand: "FoodieApp", campaign: "App Install", amount: 4500, status: "Credited" },
-  { date: "Jun 15, 2026", brand: "EduLearn", campaign: "Course Promo", amount: 6000, status: "Pending" },
-  { date: "Jun 12, 2026", brand: "WearIt", campaign: "Fashion Haul", amount: 8000, status: "Credited" },
-  { date: "Jun 10, 2026", brand: "TechGear Pro", campaign: "Gadget Review", amount: 12000, status: "Credited" },
-  { date: "Jun 8, 2026", brand: "BeautyGlow", campaign: "Skincare Post", amount: 3500, status: "Pending" },
-];
-
-const stats = [
-  { label: "Total Earnings", value: "₹1,84,500", icon: DollarSign, color: "text-accent" },
-  { label: "This Month", value: "₹35,500", icon: TrendingUp, color: "text-green-500" },
-  { label: "Pending Payments", value: "₹9,500", icon: Clock, color: "text-yellow-500" },
-];
+import { DollarSign, TrendingUp, Clock, ArrowDownRight, Loader2 } from "lucide-react";
+import { getToken, getApiUrl } from "@/utils/auth";
+import { toast } from "sonner";
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } } };
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
 const InfluencerEarnings = () => {
+  const [data, setData] = useState<any>(null);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEarnings = async () => {
+      try {
+        setLoading(true);
+        const token = getToken();
+        const response = await fetch(getApiUrl("/stats/dashboard"), {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const res = await response.json();
+          setData(res.data);
+          setTransactions(res.data.transactions || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch earnings", error);
+        toast.error("Failed to load earnings data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEarnings();
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    });
+  };
+
+  const stats = data ? [
+    { label: "Total Earnings", value: `₹${Number(data.wallet?.totalEarned || 0).toLocaleString()}`, icon: DollarSign, color: "text-accent" },
+    { label: "Today's Earnings", value: `₹${Number(data.todayEarnings || 0).toLocaleString()}`, icon: TrendingUp, color: "text-green-500" },
+    { label: "Pending Payments", value: `₹${Number(data.pendingEarnings || 0).toLocaleString()}`, icon: Clock, color: "text-yellow-500" },
+  ] : [];
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-40 gap-3">
+        <Loader2 className="h-10 w-10 animate-spin text-accent" />
+        <p className="text-muted-foreground animate-pulse">Loading your financial summary...</p>
+      </div>
+    );
+  }
+
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
       <motion.div variants={itemVariants}>
@@ -61,27 +100,37 @@ const InfluencerEarnings = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-xs">Date</TableHead>
-                    <TableHead className="text-xs">Brand</TableHead>
+                    <TableHead className="text-xs">Description</TableHead>
                     <TableHead className="text-xs">Amount</TableHead>
                     <TableHead className="text-xs">Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {transactions.map((t, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="text-xs text-muted-foreground">{t.date}</TableCell>
-                      <TableCell>
-                        <p className="text-xs font-medium text-foreground">{t.brand}</p>
-                        <p className="text-[10px] text-muted-foreground">{t.campaign}</p>
-                      </TableCell>
-                      <TableCell className="text-xs font-semibold text-foreground">₹{t.amount.toLocaleString()}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={`text-[10px] ${t.status === "Credited" ? "text-green-600 border-green-500/30" : "text-yellow-600 border-yellow-500/30"}`}>
-                          {t.status}
-                        </Badge>
+                  {transactions.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center py-10 text-muted-foreground italic">
+                        No transactions yet. Start earning!
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    transactions.map((t, i) => (
+                      <TableRow key={i}>
+                        <TableCell className="text-xs text-muted-foreground">{formatDate(t.createdAt)}</TableCell>
+                        <TableCell>
+                          <p className="text-xs font-medium text-foreground">{t.description || t.source}</p>
+                          <p className="text-[10px] text-muted-foreground uppercase">{t.category?.replace(/_/g, " ")}</p>
+                        </TableCell>
+                        <TableCell className={`text-xs font-semibold ${t.type === "CREDIT" ? "text-green-600" : "text-red-600"}`}>
+                          {t.type === "CREDIT" ? "+" : "-"}₹{Number(t.amount).toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={`text-[10px] ${t.status === "COMPLETED" ? "text-green-600 border-green-500/30" : "text-yellow-600 border-yellow-500/30"}`}>
+                            {t.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -97,7 +146,7 @@ const InfluencerEarnings = () => {
             <CardContent className="space-y-4">
               <div className="p-3 rounded-lg bg-muted/50 text-center">
                 <p className="text-xs text-muted-foreground">Withdrawable Balance</p>
-                <p className="text-2xl font-bold text-foreground">₹1,75,000</p>
+                <p className="text-2xl font-bold text-foreground">₹{Number(data?.wallet?.withdrawableBalance || 0).toLocaleString()}</p>
               </div>
               <div className="space-y-3">
                 <div>
