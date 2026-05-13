@@ -25,6 +25,7 @@ import AdminCampaigns from "./pages/admin/AdminCampaigns.tsx";
 import AdminTasks from "./pages/admin/AdminTasks.tsx";
 import AdminWithdrawals from "./pages/admin/AdminWithdrawals.tsx";
 import AdminFinance from "./pages/admin/AdminFinance.tsx";
+import AdminTransactions from "./pages/admin/AdminTransactions.tsx";
 import AdminFraud from "./pages/admin/AdminFraud.tsx";
 import AdminResellers from "./pages/admin/AdminResellers.tsx";
 import AdminReports from "./pages/admin/AdminReports.tsx";
@@ -103,6 +104,7 @@ const App = () => (
               <Route path="tasks" element={<AdminTasks />} />
               <Route path="withdrawals" element={<AdminWithdrawals />} />
               <Route path="finance" element={<AdminFinance />} />
+              <Route path="transactions" element={<AdminTransactions />} />
               <Route path="fraud" element={<AdminFraud />} />
               <Route path="resellers" element={<AdminResellers />} />
               <Route path="reports" element={<AdminReports />} />

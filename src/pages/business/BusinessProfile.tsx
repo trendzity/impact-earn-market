@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Building2, Globe, Youtube, Instagram, Facebook, Star, Users, Eye, Video, ExternalLink, ShieldCheck, Mail } from "lucide-react";
+import { Building2, Globe, Youtube, Instagram, Facebook, Star, Users, Eye, Video, ExternalLink, ShieldCheck, Mail, Linkedin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,9 @@ const BusinessProfile = () => {
     
     if (success === "youtube_connected") {
       toast.success("YouTube channel connected successfully!");
+    }
+    if (success === "linkedin_connected") {
+      toast.success("LinkedIn account connected successfully!");
     }
     if (warning === "stats_delayed") {
       toast.info("Channel connected! Stats are being fetched and will appear shortly.");
@@ -61,6 +64,9 @@ const BusinessProfile = () => {
 
   const facebookAccount = linkedAccounts.find(acc => acc.platform === "facebook");
   const fbStats = facebookAccount?.stats;
+
+  const linkedinAccount = linkedAccounts.find(acc => acc.platform === "linkedin");
+  const liStats = linkedinAccount?.stats;
 
   const formatNumber = (num: string | number) => {
     const n = typeof num === "string" ? parseInt(num) : num;
@@ -292,6 +298,48 @@ const BusinessProfile = () => {
                     </div>
                     <div>
                       <h3 className="text-sm font-bold">Facebook Integration</h3>
+                      <p className="text-xs text-muted-foreground">Connect in settings to show metrics</p>
+                    </div>
+                  </div>
+                  <Link to="/business/settings">
+                    <Button variant="ghost" size="sm" className="text-xs">Connect</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {/* LinkedIn Stats */}
+          {linkedinAccount ? (
+            <motion.div variants={itemVariants}>
+              <Card className="border border-blue-700/20 bg-gradient-to-br from-blue-700/5 to-transparent overflow-hidden">
+                <CardHeader className="flex flex-row items-center justify-between border-b border-border/50 bg-muted/30 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-blue-700/10 flex items-center justify-center">
+                      <Linkedin className="h-6 w-6 text-blue-700" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-sm font-bold uppercase tracking-widest">{liStats?.fullName || 'LinkedIn Profile'}</CardTitle>
+                      <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">{liStats?.headline || 'LinkedIn Account'}</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="bg-blue-700/10 text-blue-700 border-blue-700/20">Active</Badge>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <p className="text-sm text-muted-foreground">{liStats?.email || 'Account connected successfully'}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : (
+            <motion.div variants={itemVariants}>
+              <Card className="border border-blue-700/10 bg-muted/10 opacity-60">
+                <CardContent className="p-6 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-2xl bg-blue-700/10 flex items-center justify-center">
+                      <Linkedin className="h-6 w-6 text-blue-700" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold">LinkedIn Integration</h3>
                       <p className="text-xs text-muted-foreground">Connect in settings to show metrics</p>
                     </div>
                   </div>

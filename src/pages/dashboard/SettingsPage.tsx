@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Bell, Shield, Globe, Loader2, Save, ArrowLeft, Instagram, Youtube, Facebook, Check, MessageCircle } from "lucide-react";
+import { Bell, Shield, Globe, Loader2, Save, ArrowLeft, Instagram, Youtube, Facebook, Check, MessageCircle, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -73,6 +73,9 @@ const SettingsPage = () => {
     } else if (platform === "Facebook") {
       const token = getToken();
       window.location.href = `${getApiUrl("/auth/facebook-link")}?token=${token}`;
+    } else if (platform === "LinkedIn") {
+      const token = getToken();
+      window.location.href = `${getApiUrl("/auth/linkedin")}?token=${token}`;
     } else {
       toast.info(`${platform} connection coming soon!`);
     }
@@ -148,6 +151,9 @@ const SettingsPage = () => {
           return count >= 1000 ? (count / 1000).toFixed(1) + "k Members" : `${count} Members`;
         }
         return acc.stats.username ? `@${acc.stats.username}` : "Connected";
+      }
+      if (platform.toLowerCase() === 'linkedin') {
+        return acc.stats?.fullName || "Connected";
       }
     }
     
@@ -379,6 +385,7 @@ const SettingsPage = () => {
               { platform: "Instagram", icon: Instagram, color: "text-pink-500" },
               { platform: "Facebook", icon: Facebook, color: "text-blue-600" },
               { platform: "YouTube", icon: Youtube, color: "text-red-500" },
+              { platform: "LinkedIn", icon: Linkedin, color: "text-blue-700" },
               { platform: "Telegram", icon: MessageCircle, color: "text-blue-500" },
             ].map((s) => (
               <div key={s.platform} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">

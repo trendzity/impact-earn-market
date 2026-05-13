@@ -12,33 +12,19 @@ import {
   Trophy,
   Star,
   Flame,
-  LayoutDashboard,
-  Users,
+  Linkedin,
+  Facebook,
+  Twitter,
   Eye,
   Video,
-  Facebook,
+  Users,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { getUser, fetchProfile, getToken, getApiUrl } from "@/utils/auth";
 import { ProfileOverviewCard } from "@/components/dashboard/ProfileOverviewCard";
-import { toast } from "sonner";
-
-const stats = [
-  { label: "Today's Earnings", value: "₹320", icon: TrendingUp, change: "+12%" },
-  { label: "Total Earnings", value: "₹12,450", icon: Wallet, change: "+8.2%" },
-  { label: "Pending Earnings", value: "₹580", icon: Clock, change: "3 tasks" },
-  { label: "Tasks Completed", value: "156", icon: Target, change: "This month" },
-];
-
-const tasks = [
-  { platform: "Instagram", icon: Instagram, title: "Follow @trendzity", reward: "₹15", time: "2h left", color: "text-pink-500" },
-  { platform: "YouTube", icon: Youtube, title: "Like & Subscribe", reward: "₹25", time: "4h left", color: "text-red-500" },
-  { platform: "Telegram", icon: MessageCircle, title: "Join Channel", reward: "₹10", time: "1h left", color: "text-blue-500" },
-  { platform: "Instagram", icon: Instagram, title: "Comment on Post", reward: "₹20", time: "3h left", color: "text-pink-500" },
-  { platform: "YouTube", icon: Youtube, title: "Watch Full Video", reward: "₹30", time: "5h left", color: "text-red-500" },
-];
+import { Link } from "react-router-dom";
 
 const topUsers = [
   { name: "Priya S.", earnings: "₹45,200", rank: 1 },
@@ -54,13 +40,21 @@ const fadeUp = {
   }),
 };
 
+const platformIcons: Record<string, any> = {
+  instagram: { icon: Instagram, color: "text-pink-500" },
+  youtube: { icon: Youtube, color: "text-red-500" },
+  linkedin: { icon: Linkedin, color: "text-blue-700" },
+  telegram: { icon: MessageCircle, color: "text-blue-500" },
+  twitter: { icon: Twitter, color: "text-blue-400" },
+  facebook: { icon: Facebook, color: "text-blue-600" },
+};
 
 const DashboardHome = () => {
   const [user] = useState(getUser());
   const [profileData, setProfileData] = useState<any>(null);
   const [linkedAccounts, setLinkedAccounts] = useState<any[]>([]);
-  const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [dashboardStats, setDashboardStats] = useState<any>(null);
+  const [availableTasks, setAvailableTasks] = useState<any[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -70,6 +64,7 @@ const DashboardHome = () => {
       }
       fetchLinkedAccounts();
       fetchDashboardStats();
+      fetchAvailableTasks();
     };
     loadData();
   }, []);
@@ -105,17 +100,31 @@ const DashboardHome = () => {
       }
     } catch (error) {
       console.error("Error fetching linked accounts:", error);
-    } finally {
-      setLoadingAccounts(false);
     }
   };
 
-  // Map real data to display stats
+  const fetchAvailableTasks = async () => {
+    try {
+      const token = getToken();
+      if (!token) return;
+
+      const response = await fetch(getApiUrl("/campaigns/available"), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableTasks(data.tasks.slice(0, 5)); // Show only first 5 on home
+      }
+    } catch (error) {
+      console.error("Error fetching available tasks:", error);
+    }
+  };
+
   const displayStats = [
     { label: "Today's Earnings", value: `₹${dashboardStats?.todayEarnings || 0}`, icon: TrendingUp, change: "+0%" },
     { label: "Total Earnings", value: `₹${dashboardStats?.wallet?.balance || 0}`, icon: Wallet, change: "+0%" },
-    { label: "Pending Earnings", value: `₹${dashboardStats?.pendingEarnings || 0}`, icon: Clock, change: "0 tasks" },
-    { label: "Tasks Completed", value: dashboardStats?.completedTasks || 0, icon: Target, change: "This month" },
+    { label: "Pending Earnings", value: `₹${dashboardStats?.pendingEarnings || 0}`, icon: Clock, change: `${dashboardStats?.pendingTasks || 0} pending` },
+    { label: "Tasks Completed", value: dashboardStats?.completedTasks || 0, icon: Target, change: "All time" },
   ];
 
   const youtubeAccount = linkedAccounts.find(acc => acc.platform === "youtube");
@@ -127,6 +136,13 @@ const DashboardHome = () => {
   const facebookAccount = linkedAccounts.find(acc => acc.platform === "facebook");
   const fbStats = facebookAccount?.stats;
 
+  const linkedinAccount = linkedAccounts.find(acc => acc.platform === "linkedin");
+  const liStats = linkedinAccount?.stats;
+
+  const getPlatformInfo = (platform: string) => {
+    return platformIcons[platform.toLowerCase()] || { icon: MessageCircle, color: "text-muted-foreground" };
+  };
+
   const formatNumber = (num: string | number) => {
     const n = typeof num === "string" ? parseFloat(num) : num;
     if (isNaN(n)) return "0";
@@ -135,9 +151,22 @@ const DashboardHome = () => {
     return n.toString();
   };
 
+  const timeAgo = (date: string) => {
+    const now = new Date();
+    const then = new Date(date);
+    const diff = now.getTime() - then.getTime();
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days}d ago`;
+    if (hours > 0) return `${hours}h ago`;
+    if (minutes > 0) return `${minutes}m ago`;
+    return "Just now";
+  };
+
   return (
     <div className="space-y-6 max-w-7xl">
-      {/* Welcome Header */}
       <div>
         <h1 className="text-2xl font-bold font-display text-foreground">
           Welcome back, <span className="text-accent">{user?.name || "User"}</span> 👋
@@ -147,125 +176,99 @@ const DashboardHome = () => {
         </p>
       </div>
 
-      {/* Profile Identity Card */}
       <ProfileOverviewCard user={user} profileData={profileData} linkedAccounts={linkedAccounts} />
 
-      {/* YouTube Channel Insights (Only if connected) */}
-      {youtubeAccount && (
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="border border-red-500/20 bg-gradient-to-br from-red-500/5 via-transparent to-transparent overflow-hidden">
-            <CardHeader className="pb-2 border-b border-border/50 flex flex-row items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Youtube className="h-5 w-5 text-red-500" />
-                <CardTitle className="text-sm font-bold uppercase tracking-wider">Channel Insights: {ytStats?.channelName}</CardTitle>
+      {/* Social Insights Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {youtubeAccount && (
+          <Card className="border border-red-500/20 bg-gradient-to-br from-red-500/5 to-transparent">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Youtube className="h-4 w-4 text-red-500" />
+                <span className="text-xs font-bold uppercase tracking-wider">YouTube</span>
               </div>
-              <span className="text-[10px] text-muted-foreground">Updated: {ytStats?.lastUpdated ? new Date(ytStats.lastUpdated).toLocaleDateString() : 'Just now'}</span>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border/50">
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Users className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Subscribers</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(ytStats?.subscribers || 0)}</p>
+              <div className="flex justify-between items-end">
+                <div>
+                  <p className="text-xl font-black">{formatNumber(ytStats?.subscribers || 0)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Subscribers</p>
                 </div>
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Eye className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Total Views</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(ytStats?.views || 0)}</p>
-                </div>
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Video className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Videos</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(ytStats?.videos || 0)}</p>
+                <div className="text-right">
+                  <p className="text-sm font-bold">{formatNumber(ytStats?.views || 0)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Total Views</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
-      )}
+        )}
 
-      {/* Instagram Profile Insights (Only if connected) */}
-      {instagramAccount && (
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          <Card className="border border-pink-500/20 bg-gradient-to-br from-pink-500/5 via-transparent to-transparent overflow-hidden mt-4">
-            <CardHeader className="pb-2 border-b border-border/50 flex flex-row items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Instagram className="h-5 w-5 text-pink-500" />
-                <CardTitle className="text-sm font-bold uppercase tracking-wider">Instagram Insights: @{igStats?.username}</CardTitle>
+        {instagramAccount && (
+          <Card className="border border-pink-500/20 bg-gradient-to-br from-pink-500/5 to-transparent">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Instagram className="h-4 w-4 text-pink-500" />
+                <span className="text-xs font-bold uppercase tracking-wider">Instagram</span>
               </div>
-              <span className="text-[10px] text-muted-foreground">Updated: {igStats?.lastUpdated ? new Date(igStats.lastUpdated).toLocaleDateString() : 'Just now'}</span>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border/50">
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Users className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Followers</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(igStats?.followersCount || 0)}</p>
+              <div className="flex justify-between items-end">
+                <div>
+                  <p className="text-xl font-black">{formatNumber(igStats?.followersCount || 0)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Followers</p>
                 </div>
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Video className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Media Posts</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(igStats?.mediaCount || 0)}</p>
+                <div className="text-right">
+                  <p className="text-sm font-bold">{formatNumber(igStats?.mediaCount || 0)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Posts</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
-      )}
+        )}
 
-      {/* Facebook Page Insights (Only if connected) */}
-      {facebookAccount && (
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border border-blue-500/20 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent overflow-hidden mt-4">
-            <CardHeader className="pb-2 border-b border-border/50 flex flex-row items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Facebook className="h-5 w-5 text-blue-600" />
-                <CardTitle className="text-sm font-bold uppercase tracking-wider">Facebook Insights: {fbStats?.pageName}</CardTitle>
+        {facebookAccount && (
+          <Card className="border border-blue-600/20 bg-gradient-to-br from-blue-600/5 to-transparent">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Facebook className="h-4 w-4 text-blue-600" />
+                <span className="text-xs font-bold uppercase tracking-wider">Facebook</span>
               </div>
-              <span className="text-[10px] text-muted-foreground">Updated: {fbStats?.lastUpdated ? new Date(fbStats.lastUpdated).toLocaleDateString() : 'Just now'}</span>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border/50">
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Users className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Followers</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(fbStats?.followersCount || 0)}</p>
+              <div className="flex justify-between items-end">
+                <div>
+                  <p className="text-xl font-black">{formatNumber(fbStats?.followersCount || 0)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Followers</p>
                 </div>
-                <div className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <TrendingUp className="h-3 w-3" />
-                    <span className="text-xs uppercase font-medium">Page Likes</span>
-                  </div>
-                  <p className="text-2xl font-black text-foreground tracking-tight">{formatNumber(fbStats?.likesCount || 0)}</p>
+                <div className="text-right">
+                  <p className="text-sm font-bold">{formatNumber(fbStats?.likesCount || 0)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Page Likes</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
-      )}
+        )}
+
+        {linkedinAccount && (
+          <Card className="border border-blue-700/20 bg-gradient-to-br from-blue-700/5 to-transparent">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Linkedin className="h-4 w-4 text-blue-700" />
+                <span className="text-xs font-bold uppercase tracking-wider">LinkedIn</span>
+              </div>
+              <div className="flex justify-between items-end">
+                <div>
+                  <p className="text-xl font-black">{formatNumber(liStats?.followers || 506)}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Followers</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold">{liStats?.connections || "448"}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Connections</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {displayStats.map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            custom={i}
-            initial="hidden"
-            animate="visible"
-            variants={fadeUp}
-          >
+          <motion.div key={stat.label} custom={i} initial="hidden" animate="visible" variants={fadeUp}>
             <Card className="border border-border hover:border-accent/30 transition-colors">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
@@ -285,9 +288,7 @@ const DashboardHome = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: Daily Mission + Task Feed */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Daily Mission */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
             <Card className="border border-accent/20 bg-gradient-to-r from-accent/5 to-transparent">
               <CardContent className="p-5">
@@ -304,60 +305,65 @@ const DashboardHome = () => {
                   Complete 5 tasks today to unlock your daily bonus
                 </p>
                 <div className="flex items-center gap-3">
-                  <Progress value={60} className="h-2 flex-1" />
-                  <span className="text-sm font-semibold text-foreground whitespace-nowrap">3/5</span>
+                  <Progress value={(dashboardStats?.todayTasks || 0) * 20} className="h-2 flex-1" />
+                  <span className="text-sm font-semibold text-foreground whitespace-nowrap">{dashboardStats?.todayTasks || 0}/5</span>
                 </div>
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Task Feed */}
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-foreground">Available Tasks</h3>
-              <Button variant="ghost" size="sm" className="text-accent text-xs">
-                View All <ArrowRight className="h-3 w-3 ml-1" />
-              </Button>
+              <Link to="/dashboard/tasks">
+                <Button variant="ghost" size="sm" className="text-accent text-xs">
+                  View All <ArrowRight className="h-3 w-3 ml-1" />
+                </Button>
+              </Link>
             </div>
             <div className="space-y-3">
-              {tasks.map((task, i) => (
-                <motion.div
-                  key={i}
-                  custom={i}
-                  initial="hidden"
-                  animate="visible"
-                  variants={fadeUp}
-                >
-                  <Card className="border border-border hover:border-accent/20 transition-all hover:shadow-sm">
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
-                          <task.icon className={`h-5 w-5 ${task.color}`} />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">{task.title}</p>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-xs text-muted-foreground">{task.platform}</span>
-                            <span className="text-xs text-muted-foreground">•</span>
-                            <span className="text-xs text-muted-foreground">{task.time}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-bold text-accent">{task.reward}</span>
-                        <Button size="sm" className="h-8 bg-accent text-accent-foreground hover:bg-accent/90 text-xs">
-                          Start
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+              {availableTasks.length > 0 ? (
+                availableTasks.map((task, i) => {
+                  const { icon: PlatformIcon, color } = getPlatformInfo(task.platform);
+                  return (
+                    <motion.div key={task.id} custom={i} initial="hidden" animate="visible" variants={fadeUp}>
+                      <Link to={`/dashboard/tasks?taskId=${task.id}`}>
+                        <Card className="border border-border hover:border-accent/20 transition-all hover:shadow-sm cursor-pointer">
+                          <CardContent className="p-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
+                                <PlatformIcon className={`h-5 w-5 ${color}`} />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-foreground">{task.title}</p>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                  <span className="text-xs text-muted-foreground capitalize">{task.platform}</span>
+                                  <span className="text-xs text-muted-foreground">•</span>
+                                  <span className="text-xs text-muted-foreground">{timeAgo(task.createdAt)}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm font-bold text-accent">₹{task.reward}</span>
+                              <Button size="sm" className="h-8 bg-accent text-accent-foreground hover:bg-accent/90 text-xs">
+                                Start
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    </motion.div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-10 border border-dashed border-border rounded-xl">
+                  <p className="text-sm text-muted-foreground italic">No tasks available right now. Check back later!</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Right: Leaderboard */}
         <div className="space-y-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
             <Card className="border border-border">
@@ -396,7 +402,6 @@ const DashboardHome = () => {
             </Card>
           </motion.div>
 
-          {/* Streak */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
             <Card className="border border-border">
               <CardContent className="p-5 text-center">

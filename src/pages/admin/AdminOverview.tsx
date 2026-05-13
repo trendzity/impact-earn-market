@@ -1,44 +1,39 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, IndianRupee, Megaphone, ListChecks, TrendingUp, UserPlus } from "lucide-react";
+import { Users, IndianRupee, Megaphone, ListChecks, TrendingUp, Loader2, Play } from "lucide-react";
 import { motion } from "framer-motion";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, BarChart, Bar } from "recharts";
+import { getToken, getApiUrl } from "@/utils/auth";
+import { toast } from "sonner";
 
-const metrics = [
-  { label: "Total Users", value: "12,847", change: "+8.2%", icon: Users, color: "text-foreground" },
-  { label: "Active Today", value: "3,291", change: "+12.5%", icon: TrendingUp, color: "text-accent" },
-  { label: "Total Revenue", value: "₹18,42,500", change: "+15.3%", icon: IndianRupee, color: "text-green-500" },
-  { label: "GMV", value: "₹45,60,000", change: "+9.1%", icon: IndianRupee, color: "text-foreground" },
-  { label: "Active Campaigns", value: "187", change: "+4.7%", icon: Megaphone, color: "text-accent" },
-  { label: "Tasks Today", value: "8,412", change: "+22.1%", icon: ListChecks, color: "text-green-500" },
-];
+// Icon mapping helper
+const IconMap: Record<string, any> = {
+  Users,
+  IndianRupee,
+  Megaphone,
+  ListChecks,
+  TrendingUp,
+  Play,
+};
 
 const activityData = [
-  { day: "Mon", tasks: 1200, signups: 85 },
-  { day: "Tue", tasks: 1800, signups: 120 },
-  { day: "Wed", tasks: 1600, signups: 95 },
-  { day: "Thu", tasks: 2200, signups: 140 },
-  { day: "Fri", tasks: 2800, signups: 180 },
-  { day: "Sat", tasks: 2400, signups: 160 },
-  { day: "Sun", tasks: 1900, signups: 110 },
+  { day: "Mon", tasks: 0, signups: 0 },
+  { day: "Tue", tasks: 0, signups: 0 },
+  { day: "Wed", tasks: 0, signups: 0 },
+  { day: "Thu", tasks: 0, signups: 0 },
+  { day: "Fri", tasks: 0, signups: 0 },
+  { day: "Sat", tasks: 0, signups: 0 },
+  { day: "Sun", tasks: 0, signups: 0 },
 ];
 
 const revenueData = [
-  { month: "Jan", revenue: 120000, payouts: 85000 },
-  { month: "Feb", revenue: 145000, payouts: 98000 },
-  { month: "Mar", revenue: 180000, payouts: 125000 },
-  { month: "Apr", revenue: 210000, payouts: 148000 },
-  { month: "May", revenue: 250000, payouts: 172000 },
-  { month: "Jun", revenue: 285000, payouts: 195000 },
-];
-
-const liveFeed = [
-  { type: "task", text: "User @priya_k submitted proof for Instagram Follow campaign", time: "2m ago" },
-  { type: "signup", text: "New user registered: rahul.sharma@gmail.com", time: "5m ago" },
-  { type: "campaign", text: "Campaign 'YT Subscribe Boost' launched by TechBrand", time: "8m ago" },
-  { type: "withdrawal", text: "₹2,500 withdrawal request from @creator_dev", time: "12m ago" },
-  { type: "fraud", text: "⚠ Duplicate proof detected: User #4821", time: "15m ago" },
-  { type: "signup", text: "New reseller registered: GrowthAgency", time: "20m ago" },
+  { month: "Jan", revenue: 0, payouts: 0 },
+  { month: "Feb", revenue: 0, payouts: 0 },
+  { month: "Mar", revenue: 0, payouts: 0 },
+  { month: "Apr", revenue: 0, payouts: 0 },
+  { month: "May", revenue: 0, payouts: 0 },
+  { month: "Jun", revenue: 0, payouts: 0 },
 ];
 
 const chartConfig = {
@@ -49,6 +44,54 @@ const chartConfig = {
 };
 
 export default function AdminOverview() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        const token = getToken();
+        const response = await fetch(getApiUrl("/admin/stats/overview"), {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const resData = await response.json();
+          setData(resData.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch admin stats", error);
+        toast.error("Failed to load platform overview");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return date.toLocaleDateString();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-40 gap-3">
+        <Loader2 className="h-10 w-10 animate-spin text-accent" />
+        <p className="text-muted-foreground animate-pulse">Calculating platform metrics...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -57,21 +100,24 @@ export default function AdminOverview() {
       </div>
 
       {/* Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        {metrics.map((m, i) => (
-          <motion.div key={m.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-            <Card className="bg-card border-border hover:border-accent/30 transition-colors">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <m.icon className={`h-4 w-4 ${m.color}`} />
-                  <span className="text-xs text-green-500 font-medium">{m.change}</span>
-                </div>
-                <p className="text-lg font-bold text-foreground font-display">{m.value}</p>
-                <p className="text-xs text-muted-foreground">{m.label}</p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+        {data?.metrics?.map((m: any, i: number) => {
+          const Icon = IconMap[m.icon] || TrendingUp;
+          return (
+            <motion.div key={m.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+              <Card className="bg-card border-border hover:border-accent/30 transition-colors">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <Icon className={`h-4 w-4 text-accent`} />
+                    {m.change && <span className="text-xs text-green-500 font-medium">{m.change}</span>}
+                  </div>
+                  <p className="text-lg font-bold text-foreground font-display">{m.value}</p>
+                  <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">{m.label}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Charts */}
@@ -115,34 +161,38 @@ export default function AdminOverview() {
 
       {/* Live Feed */}
       <Card className="bg-card border-border">
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 border-b border-border/50">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
             Live Activity Feed
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-4">
           <div className="space-y-3">
-            {liveFeed.map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.08 }}
-                className="flex items-start justify-between gap-4 py-2 border-b border-border last:border-0"
-              >
-                <div className="flex items-start gap-3">
-                  <span className={`mt-1 h-2 w-2 rounded-full shrink-0 ${
-                    item.type === "fraud" ? "bg-accent" :
-                    item.type === "signup" ? "bg-green-500" :
-                    item.type === "campaign" ? "bg-blue-500" :
-                    "bg-muted-foreground"
-                  }`} />
-                  <p className="text-sm text-foreground">{item.text}</p>
-                </div>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{item.time}</span>
-              </motion.div>
-            ))}
+            {data?.liveFeed?.length === 0 ? (
+              <p className="text-center py-10 text-muted-foreground italic text-sm">Waiting for platform activity...</p>
+            ) : (
+              data?.liveFeed?.map((item: any, i: number) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.08 }}
+                  className="flex items-start justify-between gap-4 py-2 border-b border-border last:border-0"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className={`mt-1 h-2 w-2 rounded-full shrink-0 ${
+                      item.type === "finance" ? "bg-accent" :
+                      item.type === "signup" ? "bg-green-500" :
+                      item.type === "campaign" ? "bg-blue-500" :
+                      "bg-muted-foreground"
+                    }`} />
+                    <p className="text-sm text-foreground">{item.text}</p>
+                  </div>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">{formatTime(item.time)}</span>
+                </motion.div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>
