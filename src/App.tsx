@@ -29,6 +29,10 @@ const ReferralsPage = lazy(() => import("./pages/dashboard/ReferralsPage.tsx"));
 const LeaderboardPage = lazy(() => import("./pages/dashboard/LeaderboardPage.tsx"));
 const ProfilePage = lazy(() => import("./pages/dashboard/ProfilePage.tsx"));
 const SettingsPage = lazy(() => import("./pages/dashboard/SettingsPage.tsx"));
+const DepositsPage = lazy(() => import("./pages/dashboard/DepositsPage.tsx"));
+const WithdrawPage = lazy(() => import("./pages/dashboard/WithdrawPage.tsx"));
+const BankDetailsPage = lazy(() => import("./pages/dashboard/BankDetailsPage.tsx"));
+const BusinessWalletPage = lazy(() => import("./pages/business/BusinessWallet.tsx"));
 
 // Admin Pages
 const AdminOverview = lazy(() => import("./pages/admin/AdminOverview.tsx"));
@@ -42,6 +46,7 @@ const AdminFraud = lazy(() => import("./pages/admin/AdminFraud.tsx"));
 const AdminResellers = lazy(() => import("./pages/admin/AdminResellers.tsx"));
 const AdminReports = lazy(() => import("./pages/admin/AdminReports.tsx"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings.tsx"));
+const AdminDeposits = lazy(() => import("./pages/admin/AdminDeposits.tsx"));
 
 // Business Pages
 const BusinessHome = lazy(() => import("./pages/business/BusinessHome.tsx"));
@@ -104,6 +109,9 @@ const App = () => (
                 <Route path="leaderboard" element={<LeaderboardPage />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="deposits" element={<DepositsPage />} />
+                <Route path="withdraw" element={<WithdrawPage />} />
+                <Route path="payout-settings" element={<BankDetailsPage />} />
               </Route>
 
               <Route path="/business" element={<BusinessLayout />}>
@@ -112,9 +120,13 @@ const App = () => (
                 <Route path="create-campaign" element={<CreateCampaign />} />
                 <Route path="proof-review" element={<ProofReview />} />
                 <Route path="analytics" element={<BusinessAnalytics />} />
+                <Route path="wallet" element={<BusinessWalletPage />} />
                 <Route path="billing" element={<BusinessBilling />} />
                 <Route path="settings" element={<BusinessSettings />} />
                 <Route path="profile" element={<BusinessProfile />} />
+                <Route path="deposits" element={<DepositsPage />} />
+                <Route path="withdraw" element={<WithdrawPage />} />
+                <Route path="payout-settings" element={<BankDetailsPage />} />
               </Route>
 
               <Route path="/admin" element={<AdminLayout />}>
@@ -129,6 +141,7 @@ const App = () => (
                 <Route path="resellers" element={<AdminResellers />} />
                 <Route path="reports" element={<AdminReports />} />
                 <Route path="settings" element={<AdminSettings />} />
+                <Route path="deposits" element={<AdminDeposits />} />
               </Route>
 
               <Route path="/influencer" element={<InfluencerLayout />}>
@@ -139,6 +152,9 @@ const App = () => (
                 <Route path="analytics" element={<InfluencerAnalytics />} />
                 <Route path="portfolio" element={<InfluencerPortfolio />} />
                 <Route path="settings" element={<InfluencerSettings />} />
+                <Route path="deposits" element={<DepositsPage />} />
+                <Route path="withdraw" element={<WithdrawPage />} />
+                <Route path="payout-settings" element={<BankDetailsPage />} />
               </Route>
 
               <Route path="/reseller" element={<ResellerLayout />}>

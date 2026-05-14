@@ -8,6 +8,7 @@ import {
   Settings,
   Zap,
   LogOut,
+  CreditCard
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "@/utils/auth";
@@ -32,6 +33,7 @@ const menuItems = [
   { title: "Referrals", url: "/dashboard/referrals", icon: Users },
   { title: "Leaderboard", url: "/dashboard/leaderboard", icon: Trophy },
   { title: "Profile", url: "/dashboard/profile", icon: User },
+  { title: "Payout Settings", url: "/dashboard/payout-settings", icon: CreditCard },
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
 ];
 

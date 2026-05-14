@@ -1,111 +1,101 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Trophy, Medal, Crown, Star } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-
-const periods = ["Daily", "Weekly", "Monthly"];
-
-const leaderboard = [
-  { rank: 1, name: "Priya Sharma", earnings: "₹4,520", tasks: 87, badge: "🥇" },
-  { rank: 2, name: "Rahul Kumar", earnings: "₹3,890", tasks: 72, badge: "🥈" },
-  { rank: 3, name: "Sneha Mehta", earnings: "₹3,210", tasks: 65, badge: "🥉" },
-  { rank: 4, name: "Vikram Singh", earnings: "₹2,980", tasks: 58 },
-  { rank: 5, name: "Ananya Patel", earnings: "₹2,750", tasks: 52 },
-  { rank: 6, name: "Karan Gupta", earnings: "₹2,400", tasks: 48 },
-  { rank: 7, name: "Riya Das", earnings: "₹2,100", tasks: 42 },
-  { rank: 8, name: "Amit Joshi", earnings: "₹1,890", tasks: 38 },
-  { rank: 9, name: "Neha Verma", earnings: "₹1,650", tasks: 33 },
-  { rank: 10, name: "Rohit Saxena", earnings: "₹1,420", tasks: 28 },
-];
+import { Trophy, Loader2, Star, Flame } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { getToken, getApiUrl } from "@/utils/auth";
+import { toast } from "sonner";
 
 const LeaderboardPage = () => {
-  const [period, setPeriod] = useState("Weekly");
+  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [myPosition, setMyPosition] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchLeaderboard = async () => {
+    try {
+      setLoading(true);
+      const token = getToken();
+      const res = await fetch(getApiUrl("/stats/leaderboard"), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLeaderboard(data.data.leaderboard);
+        setMyPosition(data.data.myPosition);
+      }
+    } catch (error) {
+      toast.error("Failed to load leaderboard");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeaderboard();
+  }, []);
+
+  if (loading && leaderboard.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-40 gap-3">
+        <Loader2 className="h-8 w-8 animate-spin text-accent" />
+        <p className="text-sm text-muted-foreground font-display">Updating rankings...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold font-display text-foreground">Leaderboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">Compete with top earners</p>
-        </div>
-        <div className="flex gap-1 bg-muted rounded-lg p-1">
-          {periods.map((p) => (
-            <Button
-              key={p}
-              variant="ghost"
-              size="sm"
-              className={`text-xs h-7 ${period === p ? "bg-background shadow-sm text-foreground" : "text-muted-foreground"}`}
-              onClick={() => setPeriod(p)}
-            >
-              {p}
-            </Button>
-          ))}
-        </div>
-      </div>
+    <div className="space-y-6 max-w-md mx-auto sm:mx-0">
+      <Card className="border border-border/40 shadow-sm rounded-3xl overflow-hidden">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-foreground font-display tracking-tight">Leaderboard</h2>
+            <Trophy className="w-5 h-5 text-red-500" />
+          </div>
 
-      {/* Your Rank */}
-      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
-        <Card className="border border-accent/20 bg-gradient-to-r from-accent/5 to-transparent">
-          <CardContent className="p-5 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center text-lg font-bold text-accent">
-                #45
-              </div>
-              <div>
-                <p className="font-semibold text-foreground">Arjun (You)</p>
-                <p className="text-sm text-muted-foreground">₹1,240 earned • 23 tasks</p>
-              </div>
+          {/* Your Rank Box - Pinkish Style */}
+          {myPosition && (
+            <div className="bg-[#FFF1F1] border border-red-100 rounded-2xl p-6 text-center mb-8">
+              <p className="text-muted-foreground text-sm font-medium mb-1">Your Rank</p>
+              <h3 className="text-4xl font-bold text-red-500 tracking-tight">#{myPosition.rank}</h3>
             </div>
-            <Trophy className="h-6 w-6 text-accent" />
-          </CardContent>
-        </Card>
-      </motion.div>
+          )}
 
-      {/* Top 3 Podium */}
-      <div className="grid grid-cols-3 gap-3">
-        {leaderboard.slice(0, 3).map((user, i) => (
-          <motion.div key={user.rank} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-            <Card className={`border text-center ${i === 0 ? "border-yellow-500/30 bg-yellow-500/5" : "border-border"}`}>
-              <CardContent className="p-4 pt-5">
-                <div className="text-3xl mb-2">{user.badge}</div>
-                <p className="font-semibold text-foreground text-sm">{user.name}</p>
-                <p className="text-lg font-bold text-accent mt-1">{user.earnings}</p>
-                <p className="text-xs text-muted-foreground">{user.tasks} tasks</p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
+          {/* Rank List */}
+          <div className="space-y-6">
+            {leaderboard.length === 0 ? (
+              <p className="text-center text-muted-foreground py-10 italic">No data yet</p>
+            ) : (
+              leaderboard.slice(0, 10).map((user, i) => (
+                <div key={user.userId} className="flex items-center justify-between group">
+                  <div className="flex items-center gap-4">
+                    <div className={`h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold border-2 ${
+                      i === 0 ? "bg-yellow-50 border-yellow-100 text-yellow-700" :
+                      i === 1 ? "bg-slate-50 border-slate-100 text-slate-700" :
+                      i === 2 ? "bg-orange-50 border-orange-100 text-orange-700" :
+                      "bg-transparent border-transparent text-muted-foreground"
+                    }`}>
+                      {i + 1}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-foreground">{user.name}</p>
+                      <p className="text-xs text-muted-foreground">₹{Number(user.totalEarned).toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <Star className="w-4 h-4 text-red-200 group-hover:text-red-400 transition-colors" />
+                </div>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Full List */}
-      <Card className="border border-border">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Rankings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {leaderboard.map((user, i) => (
-            <motion.div
-              key={user.rank}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.03 }}
-              className="flex items-center justify-between py-3 border-b border-border last:border-0"
-            >
-              <div className="flex items-center gap-3">
-                <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                  user.rank <= 3 ? "bg-accent/10 text-accent" : "bg-muted text-muted-foreground"
-                }`}>
-                  {user.badge || `#${user.rank}`}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">{user.name}</p>
-                  <p className="text-xs text-muted-foreground">{user.tasks} tasks completed</p>
-                </div>
-              </div>
-              <p className="text-sm font-semibold text-foreground">{user.earnings}</p>
-            </motion.div>
-          ))}
+      {/* Streak Card */}
+      <Card className="border border-border/40 shadow-sm rounded-3xl overflow-hidden bg-muted/20">
+        <CardContent className="p-10 text-center">
+          <div className="flex justify-center mb-4">
+            <Flame className="w-10 h-10 text-red-500 fill-red-500" />
+          </div>
+          <h3 className="text-4xl font-bold text-foreground tracking-tight">7 Days</h3>
+          <p className="text-muted-foreground text-sm mt-1">Current Streak 🔥</p>
         </CardContent>
       </Card>
     </div>

@@ -29,7 +29,7 @@ export default function AdminWithdrawals() {
       const params = new URLSearchParams();
       if (filter !== "ALL") params.set("status", filter);
 
-      const res = await fetch(getApiUrl(`/admin/withdrawals?${params.toString()}`), {
+      const res = await fetch(getApiUrl(`/withdrawals/admin/all?${params.toString()}`), {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -52,12 +52,13 @@ export default function AdminWithdrawals() {
     try {
       setProcessingId(modal.request.id);
       const token = getToken();
-      const res = await fetch(getApiUrl(`/admin/withdrawals/${modal.request.id}`), {
+      const endpoint = modal.type === "approve" ? "approve" : "reject";
+      const res = await fetch(getApiUrl(`/withdrawals/${modal.request.id}/${endpoint}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          status: modal.type === "approve" ? "APPROVED" : "REJECTED",
-          remarks,
+          reason: modal.type === "reject" ? remarks : undefined,
+          remarks: modal.type === "approve" ? remarks : undefined,
           transactionId: modal.type === "approve" ? transactionId : undefined
         })
       });

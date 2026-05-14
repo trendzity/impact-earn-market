@@ -8,6 +8,7 @@ import {
   Settings,
   Crown,
   LogOut,
+  CreditCard
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "@/utils/auth";
@@ -32,6 +33,7 @@ const menuItems = [
   { title: "Earnings", url: "/influencer/earnings", icon: DollarSign },
   { title: "Analytics", url: "/influencer/analytics", icon: BarChart3 },
   { title: "Portfolio", url: "/influencer/portfolio", icon: Briefcase },
+  { title: "Payout Settings", url: "/influencer/payout-settings", icon: CreditCard },
   { title: "Settings", url: "/influencer/settings", icon: Settings },
 ];
 
