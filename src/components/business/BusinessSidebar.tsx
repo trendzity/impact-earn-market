@@ -9,6 +9,8 @@ import {
   Zap,
   LogOut,
   Building2,
+  Landmark,
+  Wallet,
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "@/utils/auth";
@@ -33,7 +35,9 @@ const menuItems = [
   { title: "Create Campaign", url: "/business/create-campaign", icon: PlusCircle },
   { title: "Proof Review", url: "/business/proof-review", icon: ClipboardCheck },
   { title: "Analytics", url: "/business/analytics", icon: BarChart3 },
-  { title: "Billing & Wallet", url: "/business/billing", icon: CreditCard },
+  { title: "Campaign Wallet", url: "/business/wallet", icon: Wallet },
+  { title: "Billing History", url: "/business/billing", icon: CreditCard },
+  { title: "Payout Settings", url: "/business/payout-settings", icon: Landmark },
   { title: "Settings", url: "/business/settings", icon: Settings },
 ];
 

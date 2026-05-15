@@ -17,6 +17,7 @@ const menuItems = [
   { title: "Campaigns", url: "/admin/campaigns", icon: Megaphone },
   { title: "Tasks & Submissions", url: "/admin/tasks", icon: ListChecks },
   { title: "Withdrawals", url: "/admin/withdrawals", icon: ArrowDownToLine },
+  { title: "Deposit Requests", url: "/admin/deposits", icon: Zap },
   { title: "Wallet & Finance", url: "/admin/finance", icon: Wallet },
   { title: "Transaction Ledger", url: "/admin/transactions", icon: ArrowUpDown },
   { title: "Fraud & Risk", url: "/admin/fraud", icon: ShieldAlert },
@@ -73,7 +74,7 @@ export function AdminSidebar() {
           <SidebarGroupLabel>Management</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.slice(1, 7).map((item) => (
+              {menuItems.slice(1, 8).map((item) => (
                 <MenuItem key={item.title} item={item} collapsed={collapsed} location={location} />
               ))}
             </SidebarMenu>
@@ -84,7 +85,7 @@ export function AdminSidebar() {
           <SidebarGroupLabel>Operations</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.slice(7).map((item) => (
+              {menuItems.slice(8).map((item) => (
                 <MenuItem key={item.title} item={item} collapsed={collapsed} location={location} />
               ))}
               

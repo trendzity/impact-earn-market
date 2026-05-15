@@ -19,7 +19,7 @@ export interface UserData {
 const USER_KEY = "user";
 const TOKEN_KEY = "token";
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+export const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 export const getApiUrl = (endpoint: string) => {
   const base = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;

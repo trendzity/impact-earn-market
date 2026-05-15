@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { User, Instagram, Youtube, Facebook, MessageCircle, CheckCircle, Edit, Target, Wallet, Calendar, Loader2, Linkedin, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { getToken, getApiUrl, getUser, type UserData, fetchProfile } from "@/uti
 import { Progress } from "@/components/ui/progress";
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [linkedAccounts, setLinkedAccounts] = useState<any[]>([]);
   const [user, setUser] = useState<UserData | null>(null);
@@ -153,7 +154,16 @@ const ProfilePage = () => {
                    <Progress value={Math.min(100, (dashboardStats?.completedTasks || 0) * 10)} className="h-1.5" />
                 </div>
               </div>
-              <Button variant="outline" size="sm" className="gap-1 h-9">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-1 h-9"
+                onClick={() => {
+                  const role = user?.role?.toLowerCase();
+                  const path = (role === 'general' || role === 'user') ? '/dashboard/settings' : `/${role}/settings`;
+                  navigate(path);
+                }}
+              >
                 <Edit className="h-3.5 w-3.5" /> Edit Profile
               </Button>
             </div>
