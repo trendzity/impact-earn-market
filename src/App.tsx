@@ -5,78 +5,78 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-// Auth & Layouts
-import { ProtectedRoute } from "./components/auth/ProtectedRoute.tsx";
-import DashboardLayout from "./components/dashboard/DashboardLayout.tsx";
-import AdminLayout from "./components/admin/AdminLayout.tsx";
-import BusinessLayout from "./components/business/BusinessLayout.tsx";
-import InfluencerLayout from "./components/influencer/InfluencerLayout.tsx";
-import ResellerLayout from "./components/reseller/ResellerLayout.tsx";
+// Auth & Layouts (Removed .tsx extensions)
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import DashboardLayout from "./components/dashboard/DashboardLayout";
+import AdminLayout from "./components/admin/AdminLayout";
+import BusinessLayout from "./components/business/BusinessLayout";
+import InfluencerLayout from "./components/influencer/InfluencerLayout";
+import ResellerLayout from "./components/reseller/ResellerLayout";
 
-// Pages - Lazy Loaded
-const Index = lazy(() => import("./pages/Index.tsx"));
-const NotFound = lazy(() => import("./pages/NotFound.tsx"));
-const ComingSoon = lazy(() => import("./pages/ComingSoon.tsx"));
-const Login = lazy(() => import("./pages/login/Login.tsx"));
-const SelectRole = lazy(() => import("./pages/login/SelectRole.tsx"));
-const Onboarding = lazy(() => import("./pages/login/Onboarding.tsx"));
+// Pages - Lazy Loaded (Removed .tsx extensions)
+const Index = lazy(() => import("./pages/Index"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const ComingSoon = lazy(() => import("./pages/ComingSoon"));
+const Login = lazy(() => import("./pages/login/Login"));
+const SelectRole = lazy(() => import("./pages/login/SelectRole"));
+const Onboarding = lazy(() => import("./pages/login/Onboarding"));
 
 // Dashboard Pages
-const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome.tsx"));
-const TasksPage = lazy(() => import("./pages/dashboard/TasksPage.tsx"));
-const WalletPage = lazy(() => import("./pages/dashboard/WalletPage.tsx"));
-const ReferralsPage = lazy(() => import("./pages/dashboard/ReferralsPage.tsx"));
-const LeaderboardPage = lazy(() => import("./pages/dashboard/LeaderboardPage.tsx"));
-const ProfilePage = lazy(() => import("./pages/dashboard/ProfilePage.tsx"));
-const SettingsPage = lazy(() => import("./pages/dashboard/SettingsPage.tsx"));
-const DepositsPage = lazy(() => import("./pages/dashboard/DepositsPage.tsx"));
-const WithdrawPage = lazy(() => import("./pages/dashboard/WithdrawPage.tsx"));
-const BankDetailsPage = lazy(() => import("./pages/dashboard/BankDetailsPage.tsx"));
-const BusinessWalletPage = lazy(() => import("./pages/business/BusinessWallet.tsx"));
+const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
+const TasksPage = lazy(() => import("./pages/dashboard/TasksPage"));
+const WalletPage = lazy(() => import("./pages/dashboard/WalletPage"));
+const ReferralsPage = lazy(() => import("./pages/dashboard/ReferralsPage"));
+const LeaderboardPage = lazy(() => import("./pages/dashboard/LeaderboardPage"));
+const ProfilePage = lazy(() => import("./pages/dashboard/ProfilePage"));
+const SettingsPage = lazy(() => import("./pages/dashboard/SettingsPage"));
+const DepositsPage = lazy(() => import("./pages/dashboard/DepositsPage"));
+const WithdrawPage = lazy(() => import("./pages/dashboard/WithdrawPage"));
+const BankDetailsPage = lazy(() => import("./pages/dashboard/BankDetailsPage"));
+const BusinessWalletPage = lazy(() => import("./pages/business/BusinessWallet"));
 
 // Admin Pages
-const AdminOverview = lazy(() => import("./pages/admin/AdminOverview.tsx"));
-const AdminUsers = lazy(() => import("./pages/admin/AdminUsers.tsx"));
-const AdminCampaigns = lazy(() => import("./pages/admin/AdminCampaigns.tsx"));
-const AdminTasks = lazy(() => import("./pages/admin/AdminTasks.tsx"));
-const AdminWithdrawals = lazy(() => import("./pages/admin/AdminWithdrawals.tsx"));
-const AdminFinance = lazy(() => import("./pages/admin/AdminFinance.tsx"));
-const AdminTransactions = lazy(() => import("./pages/admin/AdminTransactions.tsx"));
-const AdminFraud = lazy(() => import("./pages/admin/AdminFraud.tsx"));
-const AdminResellers = lazy(() => import("./pages/admin/AdminResellers.tsx"));
-const AdminReports = lazy(() => import("./pages/admin/AdminReports.tsx"));
-const AdminSettings = lazy(() => import("./pages/admin/AdminSettings.tsx"));
-const AdminDeposits = lazy(() => import("./pages/admin/AdminDeposits.tsx"));
+const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminCampaigns = lazy(() => import("./pages/admin/AdminCampaigns"));
+const AdminTasks = lazy(() => import("./pages/admin/AdminTasks"));
+const AdminWithdrawals = lazy(() => import("./pages/admin/AdminWithdrawals"));
+const AdminFinance = lazy(() => import("./pages/admin/AdminFinance"));
+const AdminTransactions = lazy(() => import("./pages/admin/AdminTransactions"));
+const AdminFraud = lazy(() => import("./pages/admin/AdminFraud"));
+const AdminResellers = lazy(() => import("./pages/admin/AdminResellers"));
+const AdminReports = lazy(() => import("./pages/admin/AdminReports"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminDeposits = lazy(() => import("./pages/admin/AdminDeposits"));
 
 // Business Pages
-const BusinessHome = lazy(() => import("./pages/business/BusinessHome.tsx"));
-const BusinessCampaigns = lazy(() => import("./pages/business/BusinessCampaigns.tsx"));
-const CreateCampaign = lazy(() => import("./pages/business/CreateCampaign.tsx"));
-const ProofReview = lazy(() => import("./pages/business/ProofReview.tsx"));
-const BusinessAnalytics = lazy(() => import("./pages/business/BusinessAnalytics.tsx"));
-const BusinessBilling = lazy(() => import("./pages/business/BusinessBilling.tsx"));
-const BusinessSettings = lazy(() => import("./pages/business/BusinessSettings.tsx"));
-const BusinessProfile = lazy(() => import("./pages/business/BusinessProfile.tsx"));
+const BusinessHome = lazy(() => import("./pages/business/BusinessHome"));
+const BusinessCampaigns = lazy(() => import("./pages/business/BusinessCampaigns"));
+const CreateCampaign = lazy(() => import("./pages/business/CreateCampaign"));
+const ProofReview = lazy(() => import("./pages/business/ProofReview"));
+const BusinessAnalytics = lazy(() => import("./pages/business/BusinessAnalytics"));
+const BusinessBilling = lazy(() => import("./pages/business/BusinessBilling"));
+const BusinessSettings = lazy(() => import("./pages/business/BusinessSettings"));
+const BusinessProfile = lazy(() => import("./pages/business/BusinessProfile"));
 
 // Influencer Pages
-const InfluencerHome = lazy(() => import("./pages/influencer/InfluencerHome.tsx"));
-const BrandDealsPage = lazy(() => import("./pages/influencer/BrandDealsPage.tsx"));
-const InfluencerCampaigns = lazy(() => import("./pages/influencer/InfluencerCampaigns.tsx"));
-const InfluencerEarnings = lazy(() => import("./pages/influencer/InfluencerEarnings.tsx"));
-const InfluencerAnalytics = lazy(() => import("./pages/influencer/InfluencerAnalytics.tsx"));
-const InfluencerPortfolio = lazy(() => import("./pages/influencer/InfluencerPortfolio.tsx"));
-const InfluencerSettings = lazy(() => import("./pages/influencer/InfluencerSettings.tsx"));
+const InfluencerHome = lazy(() => import("./pages/influencer/InfluencerHome"));
+const BrandDealsPage = lazy(() => import("./pages/influencer/BrandDealsPage"));
+const InfluencerCampaigns = lazy(() => import("./pages/influencer/InfluencerCampaigns"));
+const InfluencerEarnings = lazy(() => import("./pages/influencer/InfluencerEarnings"));
+const InfluencerAnalytics = lazy(() => import("./pages/influencer/InfluencerAnalytics"));
+const InfluencerPortfolio = lazy(() => import("./pages/influencer/InfluencerPortfolio"));
+const InfluencerSettings = lazy(() => import("./pages/influencer/InfluencerSettings"));
 
 // Reseller Pages
-const ResellerHome = lazy(() => import("./pages/reseller/ResellerHome.tsx"));
-const ResellerOrders = lazy(() => import("./pages/reseller/ResellerOrders.tsx"));
-const ResellerServices = lazy(() => import("./pages/reseller/ResellerServices.tsx"));
-const ResellerPricing = lazy(() => import("./pages/reseller/ResellerPricing.tsx"));
-const ResellerClients = lazy(() => import("./pages/reseller/ResellerClients.tsx"));
-const ResellerWallet = lazy(() => import("./pages/reseller/ResellerWallet.tsx"));
-const ResellerAPI = lazy(() => import("./pages/reseller/ResellerAPI.tsx"));
-const ResellerWhitelabel = lazy(() => import("./pages/reseller/ResellerWhitelabel.tsx"));
-const ResellerSettings = lazy(() => import("./pages/reseller/ResellerSettings.tsx"));
+const ResellerHome = lazy(() => import("./pages/reseller/ResellerHome"));
+const ResellerOrders = lazy(() => import("./pages/reseller/ResellerOrders"));
+const ResellerServices = lazy(() => import("./pages/reseller/ResellerServices"));
+const ResellerPricing = lazy(() => import("./pages/reseller/ResellerPricing"));
+const ResellerClients = lazy(() => import("./pages/reseller/ResellerClients"));
+const ResellerWallet = lazy(() => import("./pages/reseller/ResellerWallet"));
+const ResellerAPI = lazy(() => import("./pages/reseller/ResellerAPI"));
+const ResellerWhitelabel = lazy(() => import("./pages/reseller/ResellerWhitelabel"));
+const ResellerSettings = lazy(() => import("./pages/reseller/ResellerSettings"));
 
 const queryClient = new QueryClient();
 
