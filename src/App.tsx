@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Auth & Layouts (Removed .tsx extensions)
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { AdminRoute } from "./components/auth/AdminRoute";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import AdminLayout from "./components/admin/AdminLayout";
 import BusinessLayout from "./components/business/BusinessLayout";
@@ -129,19 +130,21 @@ const App = () => (
                 <Route path="payout-settings" element={<BankDetailsPage />} />
               </Route>
 
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<AdminOverview />} />
-                <Route path="users" element={<AdminUsers />} />
-                <Route path="campaigns" element={<AdminCampaigns />} />
-                <Route path="tasks" element={<AdminTasks />} />
-                <Route path="withdrawals" element={<AdminWithdrawals />} />
-                <Route path="finance" element={<AdminFinance />} />
-                <Route path="transactions" element={<AdminTransactions />} />
-                <Route path="fraud" element={<AdminFraud />} />
-                <Route path="resellers" element={<AdminResellers />} />
-                <Route path="reports" element={<AdminReports />} />
-                <Route path="settings" element={<AdminSettings />} />
-                <Route path="deposits" element={<AdminDeposits />} />
+              <Route element={<AdminRoute />}>
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminOverview />} />
+                  <Route path="users" element={<AdminUsers />} />
+                  <Route path="campaigns" element={<AdminCampaigns />} />
+                  <Route path="tasks" element={<AdminTasks />} />
+                  <Route path="withdrawals" element={<AdminWithdrawals />} />
+                  <Route path="finance" element={<AdminFinance />} />
+                  <Route path="transactions" element={<AdminTransactions />} />
+                  <Route path="fraud" element={<AdminFraud />} />
+                  <Route path="resellers" element={<AdminResellers />} />
+                  <Route path="reports" element={<AdminReports />} />
+                  <Route path="settings" element={<AdminSettings />} />
+                  <Route path="deposits" element={<AdminDeposits />} />
+                </Route>
               </Route>
 
               <Route path="/influencer" element={<InfluencerLayout />}>
