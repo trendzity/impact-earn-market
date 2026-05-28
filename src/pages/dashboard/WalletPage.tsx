@@ -62,7 +62,7 @@ const WalletPage = () => {
 
   const copyReferralLink = () => {
     const code = wallet?.user?.referralCode || "USER123";
-    const link = `${window.location.origin}/signup?ref=${code}`;
+    const link = `${window.location.origin}/signup?mode=signup&ref=${code}`;
     navigator.clipboard.writeText(link);
     toast.success("Referral link copied to clipboard!");
   };

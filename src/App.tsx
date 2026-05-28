@@ -1,12 +1,14 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthOnlyRoute } from "./components/auth/AuthOnlyRoute";
 
 // Auth & Layouts (Removed .tsx extensions)
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { AdminRoute } from "./components/auth/AdminRoute";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import AdminLayout from "./components/admin/AdminLayout";
 import BusinessLayout from "./components/business/BusinessLayout";
@@ -96,11 +98,26 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Login />} />
             <Route path="/auth" element={<Login />} />
-            <Route path="/select-role" element={<SelectRole />} />
+            <Route
+              path="/register"
+              element={<Navigate to="/signup?mode=signup" replace />}
+            />
             
             {/* Protected Routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/onboarding" element={<Onboarding />} />
+            <Route element={<AuthOnlyRoute />}>
+  <Route
+    path="/select-role"
+    element={<SelectRole />}
+  />
+
+  <Route
+    path="/onboarding"
+    element={<Onboarding />}
+  />
+</Route>
+
+<Route element={<ProtectedRoute />}>
+
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardHome />} />
                 <Route path="tasks" element={<TasksPage />} />
@@ -129,19 +146,21 @@ const App = () => (
                 <Route path="payout-settings" element={<BankDetailsPage />} />
               </Route>
 
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<AdminOverview />} />
-                <Route path="users" element={<AdminUsers />} />
-                <Route path="campaigns" element={<AdminCampaigns />} />
-                <Route path="tasks" element={<AdminTasks />} />
-                <Route path="withdrawals" element={<AdminWithdrawals />} />
-                <Route path="finance" element={<AdminFinance />} />
-                <Route path="transactions" element={<AdminTransactions />} />
-                <Route path="fraud" element={<AdminFraud />} />
-                <Route path="resellers" element={<AdminResellers />} />
-                <Route path="reports" element={<AdminReports />} />
-                <Route path="settings" element={<AdminSettings />} />
-                <Route path="deposits" element={<AdminDeposits />} />
+              <Route element={<AdminRoute />}>
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminOverview />} />
+                  <Route path="users" element={<AdminUsers />} />
+                  <Route path="campaigns" element={<AdminCampaigns />} />
+                  <Route path="tasks" element={<AdminTasks />} />
+                  <Route path="withdrawals" element={<AdminWithdrawals />} />
+                  <Route path="finance" element={<AdminFinance />} />
+                  <Route path="transactions" element={<AdminTransactions />} />
+                  <Route path="fraud" element={<AdminFraud />} />
+                  <Route path="resellers" element={<AdminResellers />} />
+                  <Route path="reports" element={<AdminReports />} />
+                  <Route path="settings" element={<AdminSettings />} />
+                  <Route path="deposits" element={<AdminDeposits />} />
+                </Route>
               </Route>
 
               <Route path="/influencer" element={<InfluencerLayout />}>
