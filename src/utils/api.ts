@@ -56,18 +56,38 @@ export async function apiFetch<T = unknown>(
   const token = auth ? getToken() : null;
 
   const mergedHeaders: HeadersInit = {
-    ...(headers || {}),
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
+  
+...(init.body instanceof FormData
+  ? {}
+  : { "Content-Type": "application/json" }),
+  
+  ...(headers || {}),
 
-  const res = await fetch(getApiUrl(endpoint), {
+  ...(token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : {}),
+};
+
+ let res: Response;
+
+try {
+  res = await fetch(getApiUrl(endpoint), {
     ...init,
     headers: mergedHeaders,
   });
-
+} catch (error) {
+  return {
+    ok: false,
+    status: 0,
+    error: "Network error. Please check your connection and try again.",
+    response: new Response(),
+  };
+}
   const body = await safeParseJson(res);
 
-  if (res.status === 401 || res.status === 403) {
+  if (res.status === 401 ||) {
     if (redirectOnAuthError) {
       handleAuthFailure("/login");
     }
@@ -79,6 +99,15 @@ export async function apiFetch<T = unknown>(
       data: body ?? undefined,
     };
   }
+if (res.status === 403) {
+  return {
+    ok: false,
+    status: res.status,
+    error: "Access denied",
+    response: res,
+    data: body ?? undefined,
+  };
+}
 
   if (!res.ok) {
     return {
