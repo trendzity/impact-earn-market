@@ -57,7 +57,7 @@ const ReferralsPage = () => {
   }, []);
 
   const referralCode = wallet?.user?.referralCode || "LOADING...";
-  const referralLink = `${window.location.origin}/signup?ref=${referralCode}`;
+  const referralLink = `${window.location.origin}/signup?mode=signup&ref=${referralCode}`;
 
   const handleCopy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);

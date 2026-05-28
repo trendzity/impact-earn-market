@@ -5,18 +5,13 @@ export class RegisterPage {
   constructor(private page: Page) {}
 
   async goto() {
-
-    await this.page.goto(
-      'https://impact-earn-market-l7bd.vercel.app/register',
-      {
-        waitUntil: 'domcontentloaded'
-      }
-    );
+    await this.page.goto('/signup?mode=signup', {
+      waitUntil: 'domcontentloaded',
+    });
 
     await expect(
-      this.page.getByRole('heading')
+      this.page.getByRole('heading', { name: /create account/i })
     ).toBeVisible();
-
   }
 
   async register(
@@ -24,7 +19,6 @@ export class RegisterPage {
     email: string,
     password: string
   ) {
-
     await this.page.getByRole('textbox', {
       name: /name/i
     }).fill(name);
@@ -40,14 +34,12 @@ export class RegisterPage {
     await this.page.getByRole('button', {
       name: /sign up|register/i
     }).click();
-
   }
 
   async verifyRegisterSuccess() {
-
-    await this.page.waitForLoadState('networkidle');
-
-    await expect(this.page).not.toHaveURL(/register/);
-
+    await expect(this.page).toHaveURL(
+      /\/(select-role|dashboard|onboarding)/,
+      { timeout: 15000 }
+    );
   }
 }

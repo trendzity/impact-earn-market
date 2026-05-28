@@ -14,15 +14,22 @@ export interface UserData {
   socialHandle?: string;
 }
 
+import { API_BASE_URL, getEnvConfigError } from "@/config/env";
+
 const USER_KEY = "user";
 const TOKEN_KEY = "token";
 
-export const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://backend-23gy.onrender.com/api";
+export { API_BASE_URL };
+
+function requireApiBaseUrl(): string {
+  if (!API_BASE_URL) {
+    throw new Error(getEnvConfigError() ?? "API base URL is not configured.");
+  }
+  return API_BASE_URL;
+}
 
 export const getApiUrl = (endpoint: string) => {
-  const base = API_BASE_URL.endsWith('/')
+  const base = requireApiBaseUrl().endsWith('/')
     ? API_BASE_URL.slice(0, -1)
     : API_BASE_URL;
 
@@ -40,9 +47,11 @@ export const getServerUrl = (endpoint: string) => {
     return endpoint;
   }
 
-  const base = API_BASE_URL.replace("/api", "").endsWith('/')
-    ? API_BASE_URL.replace("/api", "").slice(0, -1)
-    : API_BASE_URL.replace("/api", "");
+  const apiBase = requireApiBaseUrl();
+  const serverBase = apiBase.replace("/api", "");
+  const base = serverBase.endsWith('/')
+    ? serverBase.slice(0, -1)
+    : serverBase;
 
   const path = endpoint.startsWith('/')
     ? endpoint

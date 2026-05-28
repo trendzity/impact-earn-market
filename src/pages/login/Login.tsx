@@ -5,7 +5,7 @@ import { ArrowRight, Zap, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import {
   saveUser,
@@ -32,10 +32,34 @@ function getPostAuthPath(user: UserData) {
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialMode = searchParams.get("mode") === "signup" ? "signup" : "login";
   
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
+
+  const setAuthMode = (next: "login" | "signup") => {
+    setMode(next);
+    if (next === "signup") {
+      const params = new URLSearchParams(searchParams);
+      params.set("mode", "signup");
+      navigate({ pathname: "/signup", search: params.toString() }, { replace: true });
+    } else {
+      navigate("/login", { replace: true });
+    }
+  };
+
+  // Keep signup UI in sync with canonical URL (/signup?mode=signup).
+  useEffect(() => {
+    if (location.pathname === "/signup" && searchParams.get("mode") !== "signup") {
+      const params = new URLSearchParams(searchParams);
+      params.set("mode", "signup");
+      navigate({ pathname: "/signup", search: params.toString() }, { replace: true });
+      return;
+    }
+    const urlMode = searchParams.get("mode") === "signup" ? "signup" : "login";
+    setMode(urlMode);
+  }, [location.pathname, searchParams, navigate]);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -342,9 +366,9 @@ const handleAuth = async (
 
               <div className="mt-8 text-center text-sm text-muted-foreground">
                 {mode === "login" ? (
-                  <p>Don't have an account? <button type="button" onClick={() => setMode("signup")} className="text-foreground font-semibold hover:text-accent transition-colors">Sign up</button></p>
+                  <p>Don't have an account? <button type="button" onClick={() => setAuthMode("signup")} className="text-foreground font-semibold hover:text-accent transition-colors">Sign up</button></p>
                 ) : (
-                  <p>Already have an account? <button type="button" onClick={() => setMode("login")} className="text-foreground font-semibold hover:text-accent transition-colors">Log in</button></p>
+                  <p>Already have an account? <button type="button" onClick={() => setAuthMode("login")} className="text-foreground font-semibold hover:text-accent transition-colors">Log in</button></p>
                 )}
               </div>
             </div>
