@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthOnlyRoute } from "./components/auth/AuthOnlyRoute";
 
 // Auth & Layouts (Removed .tsx extensions)
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -97,11 +98,22 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Login />} />
             <Route path="/auth" element={<Login />} />
-            <Route path="/select-role" element={<SelectRole />} />
             
             {/* Protected Routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/onboarding" element={<Onboarding />} />
+            <Route element={<AuthOnlyRoute />}>
+  <Route
+    path="/select-role"
+    element={<SelectRole />}
+  />
+
+  <Route
+    path="/onboarding"
+    element={<Onboarding />}
+  />
+</Route>
+
+<Route element={<ProtectedRoute />}>
+
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardHome />} />
                 <Route path="tasks" element={<TasksPage />} />

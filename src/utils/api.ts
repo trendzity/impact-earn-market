@@ -87,7 +87,7 @@ try {
 }
   const body = await safeParseJson(res);
 
-  if (res.status === 401 ||) {
+  if (res.status === 401) {
     if (redirectOnAuthError) {
       handleAuthFailure("/login");
     }
