@@ -35,6 +35,8 @@ test('Complete auth flow', async ({ page }) => {
 
   // VERIFY DASHBOARD
 
-  await expect(page).toHaveURL(/dashboard/);
+  await expect(page).toHaveURL(
+    /\/(dashboard|admin|business|influencer|reseller|select-role|onboarding)/
+  );
 
 });

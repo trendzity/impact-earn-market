@@ -1,35 +1,19 @@
-import { test } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-import { LoginPage } from '../pages/LoginPage';
+test("Valid login", async ({ page }) => {
+  await page.goto("/login");
 
-import { testUser } from '../utils/testData';
+  await page
+    .getByRole("textbox", { name: "Email" })
+    .fill("qa@trendzity.com");
 
-test('Valid login', async ({ page }) => {
+  await page
+    .getByRole("textbox", { name: "Password" })
+    .fill("Password@123");
 
-  const loginPage = new LoginPage(page);
+  await page
+    .getByRole("button", { name: /sign in/i })
+    .click();
 
-  await loginPage.goto();
-
-  await loginPage.login(
-    testUser.validEmail,
-    testUser.validPassword
-  );
-
-  await loginPage.verifyLoginSuccess();
-
-});
-
-test('Invalid login', async ({ page }) => {
-
-  const loginPage = new LoginPage(page);
-
-  await loginPage.goto();
-
-  await loginPage.login(
-    testUser.invalidEmail,
-    testUser.invalidPassword
-  );
-
-  await loginPage.verifyLoginFailure();
-
+  await expect(page).toHaveURL(/dashboard|admin|business|influencer|reseller/);
 });

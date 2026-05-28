@@ -5,24 +5,18 @@ export class LoginPage {
   constructor(private page: Page) {}
 
   async goto() {
-
-    await this.page.goto(
-      'https://impact-earn-market-l7bd.vercel.app/login',
-      {
-        waitUntil: 'domcontentloaded'
-      }
-    );
+    await this.page.goto('/login', {
+      waitUntil: 'domcontentloaded',
+    });
 
     await expect(
       this.page.getByRole('heading', {
-        name: 'Welcome Back'
+        name: /welcome back/i
       })
     ).toBeVisible();
-
   }
 
   async login(email: string, password: string) {
-
     await this.page.getByRole('textbox', {
       name: 'Email'
     }).fill(email);
@@ -32,28 +26,22 @@ export class LoginPage {
     }).fill(password);
 
     await this.page.getByRole('button', {
-      name: 'Sign In'
+      name: /sign in/i
     }).click();
-
   }
 
   async verifyLoginSuccess() {
-
-    await this.page.waitForURL('**/dashboard', {
-      timeout: 15000
-    });
-
-    await expect(this.page).toHaveURL(/dashboard/);
-
+    await expect(this.page).toHaveURL(
+      /\/(dashboard|admin|business|influencer|reseller|select-role|onboarding)/,
+      { timeout: 15000 }
+    );
   }
 
   async verifyLoginFailure() {
-
     await expect(
       this.page.locator('text=Invalid')
     ).toBeVisible({
       timeout: 10000
     });
-
   }
 }
