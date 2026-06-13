@@ -5,17 +5,61 @@ import { ArrowRight, Zap, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { saveUser, saveToken, UserData, getApiUrl } from "@/utils/auth";
+import {
+  saveUser,
+  saveToken,
+  UserData,
+  getApiUrl,
+} from "@/utils/auth";
 
+import { apiFetch } from "@/utils/api";
+
+function getPostAuthPath(user: UserData) {
+  const role = user.role?.toLowerCase();
+
+  if (role === "admin") return "/admin";
+
+  if (!role) return "/select-role";
+
+  if (!user.onboarded) return "/select-role";
+
+  if (role === "general" || role === "user") return "/dashboard";
+
+  return `/${role}`;
+}
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialMode = searchParams.get("mode") === "signup" ? "signup" : "login";
   
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
+
+  const setAuthMode = (next: "login" | "signup") => {
+    setMode(next);
+    if (next === "signup") {
+      const params = new URLSearchParams(searchParams);
+      params.set("mode", "signup");
+      navigate({ pathname: "/signup", search: params.toString() }, { replace: true });
+    } else {
+      navigate("/login", { replace: true });
+    }
+  };
+
+  // Keep signup UI in sync with canonical URL (/signup?mode=signup).
+  useEffect(() => {
+    if (location.pathname === "/signup" && searchParams.get("mode") !== "signup") {
+      const params = new URLSearchParams(searchParams);
+      params.set("mode", "signup");
+      navigate({ pathname: "/signup", search: params.toString() }, { replace: true });
+      return;
+    }
+    const urlMode = searchParams.get("mode") === "signup" ? "signup" : "login";
+    setMode(urlMode);
+  }, [location.pathname, searchParams, navigate]);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -23,117 +67,149 @@ const Login = () => {
   const [name, setName] = useState("");
 
   useEffect(() => {
-    // Check if we just returned from OAuth with user data
-    const userParam = searchParams.get("user");
-    const tokenParam = searchParams.get("token");
-    if (userParam && tokenParam) {
-      setLoading(true);
-      try {
-        const rawUserData = JSON.parse(decodeURIComponent(userParam));
-        
-        // Map backend user to our schema
-        const userData: UserData = {
-          name: rawUserData.name || "User",
-          email: rawUserData.email || "",
-          profileImage: rawUserData.profileImage || "",
-          loginType: rawUserData.provider || "google",
-          role: rawUserData.role?.toLowerCase(),
-          onboarded: rawUserData.onboarded
-        };
+  const userParam = searchParams.get("user");
+  const tokenParam = searchParams.get("token");
 
-        saveUser(userData);
-        saveToken(tokenParam);
-        
-        // Clean URL immediately
-        const newParams = new URLSearchParams(searchParams);
-        newParams.delete("user");
-        newParams.delete("token");
-        setSearchParams(newParams, { replace: true });
-        
-        toast.success(`Welcome ${userData.name}!`);
-
-        // Check if admin
-        const isAdmin = userData.email === "admin@trendzity.com" || userData.role === 'admin';
-        if (isAdmin) {
-          navigate("/admin");
-        } else if (userData.onboarded) {
-          const dashboardPath = (userData.role === 'general' || userData.role === 'user') ? '/dashboard' : `/${userData.role}`;
-          navigate(dashboardPath);
-        } else {
-          // Unified flow: Always go to role selection first if not onboarded
-          navigate("/select-role");
-        }
-      } catch (error) {
-        console.error("Failed to parse user data", error);
-        toast.error("Authentication failed. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-  }, [searchParams, setSearchParams, navigate]);
-
-  const handleOAuth = (provider: "google" | "facebook" | "linkedin") => {
-    // Redirect to backend auth route - keep provider in query for mapping later if needed
-    window.location.href = getApiUrl(`/auth/${provider}`);
-  };
-
-  const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
+  if (userParam && tokenParam) {
     setLoading(true);
-    
-    try {
-      const endpoint = mode === "signup" ? "/auth/register" : "/auth/login";
-      const payload = mode === "signup" ? { name: email.split('@')[0], email, password } : { email, password };
-      
-      const url = getApiUrl(endpoint);
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      
-      const data = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(data.message || "Authentication failed");
-      }
-      
-      const userData: UserData = {
-        name: data.user.name,
-        email: data.user.email,
-        loginType: "manual",
-        role: data.user.role?.toLowerCase(),
-        onboarded: data.user.onboarded
-      };
-      
-      saveUser(userData);
-      saveToken(data.token);
-      
-      if (mode === "signup") {
-        toast.success("Account created successfully!");
-        navigate("/select-role");
-      } else {
-        toast.success("Welcome back!");
-        const isAdmin = userData.role === 'admin' || userData.email === "admin@trendzity.com";
-        if (isAdmin) {
-          navigate("/admin");
-        } else if (userData.onboarded) {
-          const dashboardPath = (userData.role === 'general' || userData.role === 'user') ? '/dashboard' : `/${userData.role}`;
-          navigate(dashboardPath);
-        } else {
-          navigate("/select-role");
-        }
-      }
 
-    } catch (error: any) {
-      console.error("Auth error:", error);
-      toast.error(error.message || "An error occurred");
+    try {
+      // URLSearchParams already decodes percent-encoding in most browsers, but
+      // keep a safe fallback since backend redirects may double-encode.
+      const decodedUserParam = (() => {
+        try {
+          return decodeURIComponent(userParam);
+        } catch {
+          return userParam;
+        }
+      })();
+
+      const rawUserData = JSON.parse(decodedUserParam);
+
+      const userData: UserData = {
+        name: rawUserData.name || "User",
+        email: rawUserData.email || "",
+        profileImage:
+          rawUserData.profileImage || "",
+        loginType:
+          rawUserData.provider || "google",
+        role: rawUserData.role?.toLowerCase(),
+        onboarded: rawUserData.onboarded,
+      };
+
+      saveUser(userData);
+
+      saveToken(tokenParam);
+
+      // Remove only sensitive params (keep others like mode/ref).
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("user");
+      newParams.delete("token");
+      setSearchParams(newParams, { replace: true });
+
+      toast.success(`Welcome ${userData.name}!`);
+
+      navigate(getPostAuthPath(userData));
+    } catch (error) {
+      console.error(
+        "Failed to parse user data",
+        error
+      );
+
+      toast.error(
+        "Authentication failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
-  };
+  }
+}, [searchParams, navigate]);
 
+const handleOAuth = (
+  provider: "google" | "facebook" | "linkedin"
+) => {
+  window.location.href =
+    getApiUrl(`/auth/${provider}`);
+};
+
+const handleAuth = async (
+  e: React.FormEvent
+) => {
+  e.preventDefault();
+
+  setLoading(true);
+
+  try {
+    const endpoint =
+      mode === "signup"
+        ? "/auth/register"
+        : "/auth/login";
+
+    const payload =
+      mode === "signup"
+        ? {
+            name: name.trim(),
+            email: email.trim(),
+            password,
+          }
+        : {
+            email: email.trim(),
+            password,
+          };
+
+    const result = await apiFetch<{
+      user: any;
+      token: string;
+    }>(endpoint, {
+      method: "POST",
+      auth: false,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!result.ok) {
+      throw new Error(
+        result.error ||
+          "Authentication failed"
+      );
+    }
+
+    const data = result.data;
+
+    const userData: UserData = {
+      name: data.user.name,
+      email: data.user.email,
+      loginType: "manual",
+      role: data.user.role?.toLowerCase(),
+      onboarded: data.user.onboarded,
+    };
+
+    saveUser(userData);
+
+    saveToken(data.token);
+
+    if (mode === "signup") {
+      toast.success(
+        "Account created successfully!"
+      );
+
+      navigate("/select-role");
+    } else {
+      toast.success("Welcome back!");
+
+      navigate(getPostAuthPath(userData));
+    }
+  } catch (error: any) {
+    console.error("Auth error:", error);
+
+    toast.error(
+      error?.message ||
+        "Something went wrong. Please try again."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
@@ -181,7 +257,14 @@ const Login = () => {
                 {mode === "signup" && (
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" placeholder="John Doe" required className="bg-background/50 border-white/10 focus:border-accent" />
+                    <Input
+  id="name"
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+  placeholder="John Doe"
+  required
+  className="bg-background/50 border-white/10 focus:border-accent"
+/>
                   </div>
                 )}
                 
@@ -283,9 +366,9 @@ const Login = () => {
 
               <div className="mt-8 text-center text-sm text-muted-foreground">
                 {mode === "login" ? (
-                  <p>Don't have an account? <button type="button" onClick={() => setMode("signup")} className="text-foreground font-semibold hover:text-accent transition-colors">Sign up</button></p>
+                  <p>Don't have an account? <button type="button" onClick={() => setAuthMode("signup")} className="text-foreground font-semibold hover:text-accent transition-colors">Sign up</button></p>
                 ) : (
-                  <p>Already have an account? <button type="button" onClick={() => setMode("login")} className="text-foreground font-semibold hover:text-accent transition-colors">Log in</button></p>
+                  <p>Already have an account? <button type="button" onClick={() => setAuthMode("login")} className="text-foreground font-semibold hover:text-accent transition-colors">Log in</button></p>
                 )}
               </div>
             </div>

@@ -12,12 +12,15 @@ export const ProtectedRoute = () => {
   }
 
   // Admin bypass
-  const isAdmin = user.email === "admintrendzity@gmail.com";
+  const isAdmin = user?.role === "admin";
   
-  if (!user.role && !isAdmin) {
-    // Logged in but no role selected
-    return <Navigate to="/select-role" replace />;
-  }
+  if (
+  !user.role &&
+  !isAdmin &&
+  location.pathname !== "/select-role"
+) {
+  return <Navigate to="/select-role" replace />;
+}
 
   // If they have a role but haven't onboarded yet, send to onboarding
   // We exclude /onboarding from this check to avoid infinite recursion
