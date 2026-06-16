@@ -40,13 +40,28 @@ const Footer = () => (
         <div>
           <h4 className="font-bold text-foreground mb-4 text-sm uppercase tracking-wider">Legal</h4>
           <ul className="space-y-3 text-sm text-muted-foreground">
-            {["Terms of Service", "Privacy Policy", "Cookie Policy"].map(item => (
+            {/* {["Terms of Service", "Privacy Policy", "Cookie Policy"].map(item => (
               <li key={item}>
                 <a href="#" className="hover:text-foreground transition-colors duration-300 inline-flex items-center gap-1 group">
                   {item} <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </a>
               </li>
-            ))}
+            ))} */}
+            <li>
+              <a href="#" className="hover:text-foreground transition-colors duration-300 inline-flex items-center gap-1 group">
+                Terms of Service <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </a>
+            </li>
+            <li>
+              <a href="/privacy-policy" className="hover:text-foreground transition-colors duration-300 inline-flex items-center gap-1 group">
+                Privacy Policy <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-foreground transition-colors duration-300 inline-flex items-center gap-1 group">
+                Cookie Policy <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </a>
+            </li>
           </ul>
         </div>
       </div>

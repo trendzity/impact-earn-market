@@ -22,6 +22,7 @@ const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 const Login = lazy(() => import("./pages/login/Login"));
 const SelectRole = lazy(() => import("./pages/login/SelectRole"));
 const Onboarding = lazy(() => import("./pages/login/Onboarding"));
+const PrivacyPolicy = lazy(()=>import("./pages/PrivacyPolicy"));
 
 // Dashboard Pages
 const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
@@ -98,6 +99,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Login />} />
             <Route path="/auth" element={<Login />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
             <Route
               path="/register"
               element={<Navigate to="/signup?mode=signup" replace />}
