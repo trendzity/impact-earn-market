@@ -222,8 +222,10 @@ const BusinessSettings = () => {
     );
   }
 
-  return (
+      return (
     <motion.div initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.06 } } }} className="space-y-6 max-w-3xl">
+
+
       <motion.div variants={item} className="flex flex-col gap-4">
         <Link 
           to="/business" 
@@ -397,7 +399,9 @@ const BusinessSettings = () => {
       </motion.div>
 
       {/* Social Accounts */}
-      <motion.div variants={item}>
+            {/* Social Accounts & Meta Guide */}
+      <motion.div variants={item} className="relative w-full">
+        {/* Connected Social Accounts (Size stays original max-w-3xl) */}
         <Card className="border-border/50">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium">Connected Social Accounts</CardTitle>
@@ -456,9 +460,41 @@ const BusinessSettings = () => {
             ))}
           </CardContent>
         </Card>
+
+        {/* Compact Meta Guide Sidebar (Sits next to the social card on desktop, stacks on mobile) */}
+        <div className="mt-6 xl:mt-0 xl:absolute xl:left-[calc(100%+24px)] xl:top-0 xl:w-[280px] w-full flex-shrink-0">
+          <Card className="border-red-500/20 bg-red-500/5 dark:bg-red-500/5">
+            <CardHeader className="pb-2.5 pt-3 px-3 border-b border-red-500/10">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-wider text-red-500 flex items-center gap-1.5">
+                {/* Meta Loop Logo SVG */}
+                {/* <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current text-red-500" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16.2 6c-1.5 0-2.9.8-3.8 2.2-.9-1.4-2.3-2.2-3.8-2.2C5.9 6 3.7 8.2 3.7 11c0 2.8 2.2 5 4.9 5 1.5 0 2.9-.8 3.8-2.2.9 1.4 2.3 2.2 3.8 2.2 2.7 0 4.9-2.2 4.9-5 0-2.8-2.2-5-4.9-5zm-7.6 8.3c-1.8 0-3.2-1.5-3.2-3.3S6.8 7.7 8.6 7.7c.9 0 1.7.4 2.3 1.1-.9 1.2-.9 2.9 0 4.2-.6.7-1.4 1.3-2.3 1.3zm7.6 0c-.9 0-1.7-.5-2.3-1.3.9-1.2.9-2.9 0-4.2.6-.7 1.4-1.1 2.3-1.1 1.8 0 3.2 1.5 3.2 3.3s-1.4 3.3-3.2 3.3z"/>
+                </svg> */}
+                Meta Connection Guide
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2.5 text-[10px] leading-relaxed text-muted-foreground p-3">
+              <p>
+                Requirements for <strong>Instagram</strong> & <strong>Facebook</strong> Connection, make sure you:
+              </p>
+              <ul className="list-disc pl-3.5 space-y-1">
+                <li>Own a Facebook Business Page. (mandatory)</li>
+                <li>Have an Instagram Business/Creator profile.</li>
+                <li>Link the Instagram profile to the Facebook Page (via Page Settings &rarr; Linked Accounts).</li>
+              </ul>
+              <div className="bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 rounded-lg p-2.5 mt-2 flex items-start gap-1.5">
+                <span className="font-bold text-[9px] mt-0.5">⚠️</span>
+                <p className="text-[9px] leading-normal font-medium">
+                  Your Instagram Business/Creator account must be linked to the same Facebook Business Page connected to Trendzity. This is required for Instagram connection, publishing, and analytics features.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </motion.div>
     </motion.div>
   );
 };
 
 export default BusinessSettings;
+
