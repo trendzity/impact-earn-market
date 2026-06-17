@@ -25,6 +25,7 @@ const CreateCampaign = () => {
   const [loading, setLoading] = useState(false);
   const [generatingAI, setGeneratingAI] = useState(false);
   const [generatingVideo, setGeneratingVideo] = useState(false);
+  const [isShort,setIsShort] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -155,7 +156,7 @@ const CreateCampaign = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ prompt: formData.description }),
+        body: JSON.stringify({ prompt: formData.description, isShort: formData.platform === 'youtube' && isShort }),
       });
 
       if (response.ok) {
@@ -293,7 +294,18 @@ const CreateCampaign = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Platform *</Label>
-                    <Select value={formData.platform} onValueChange={(v) => setFormData(prev => ({ ...prev, platform: v }))}>
+                    <Select 
+                      value={formData.platform} 
+                      onValueChange={(v) => {
+                        setFormData(prev => ({ 
+                          ...prev, 
+                          platform: v,
+                          imageUrl: v === "youtube" ? "" : prev.imageUrl,
+                          publishToYouTube: v === "youtube" ? prev.isSocialSync : false
+                        }));
+                        if (v !== "youtube") setIsShort(false);
+                      }}
+                    >
                       <SelectTrigger className="bg-background/50 border-border/50"><SelectValue placeholder="Select platform" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="instagram">
@@ -411,40 +423,61 @@ const CreateCampaign = () => {
 
                 {/* ── AI Creative Section ── */}
                 <div className="space-y-3 pt-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex justify-between items-center">
-                    Campaign Creative
-                    <span className="text-[10px] normal-case font-normal text-muted-foreground">Image or Video</span>
-                  </Label>
+                  <div className="flex justify-between items-center">
+                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      Campaign Creative
+                    </Label>
+                    {formData.platform === "youtube" && (
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="youtube-shorts" className="text-[10px] text-muted-foreground uppercase font-bold cursor-pointer">
+                          Format as YouTube Short
+                        </Label>
+                        <Switch 
+                          id="youtube-shorts" 
+                          checked={isShort} 
+                          onCheckedChange={setIsShort} 
+                        />
+                      </div>
+                    )}
+                  </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <Button
-                      type="button"
-                      className="bg-[#ef4444] hover:bg-[#dc2626] text-white h-[42px] gap-1.5 shadow-lg shadow-red-500/10 text-xs border-none"
-                      onClick={() => document.getElementById('image-upload')?.click()}
-                    >
-                      <ImageIcon className="h-3.5 w-3.5" /> Image
-                    </Button>
-                    <Input 
-                      id="image-upload" 
-                      type="file" 
-                      className="hidden" 
-                      accept="image/png, image/jpeg, image/jpg" 
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          if (file.size > 5 * 1024 * 1024) {
-                            toast.error("Image too large! Maximum size is 5MB.");
-                            return;
-                          }
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            setFormData(prev => ({ ...prev, imageUrl: reader.result as string, videoUrl: "" }));
-                            toast.success("Image uploaded!");
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                    />
+                {/* Creative Buttons Grid */}
+                  <div className={`grid grid-cols-2 gap-2 ${
+                    formData.platform === "youtube" ? "sm:grid-cols-2" : "sm:grid-cols-4"
+                  }`}>
+                    {/* Only show Image buttons if platform is NOT youtube */}
+                    {formData.platform !== "youtube" && (
+                      <>
+                        <Button
+                          type="button"
+                          className="bg-[#ef4444] hover:bg-[#dc2626] text-white h-[42px] gap-1.5 shadow-lg shadow-red-500/10 text-xs border-none"
+                          onClick={() => document.getElementById('image-upload')?.click()}
+                        >
+                          <ImageIcon className="h-3.5 w-3.5" /> Image
+                        </Button>
+                        <Input 
+                          id="image-upload" 
+                          type="file" 
+                          className="hidden" 
+                          accept="image/png, image/jpeg, image/jpg" 
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              if (file.size > 5 * 1024 * 1024) {
+                                toast.error("Image too large! Maximum size is 5MB.");
+                                return;
+                              }
+                              const reader = new FileReader();
+                              reader.onloadend = () => {
+                                setFormData(prev => ({ ...prev, imageUrl: reader.result as string, videoUrl: "" }));
+                                toast.success("Image uploaded!");
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </>
+                    )}
 
                     <Button
                       type="button"
@@ -475,15 +508,18 @@ const CreateCampaign = () => {
                       }}
                     />
 
-                    <Button
-                      type="button"
-                      className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white h-[42px] gap-1.5 shadow-lg shadow-purple-500/10 text-xs col-span-1"
-                      onClick={handleGenerateAI}
-                      disabled={isGenerating}
-                    >
-                      {generatingAI ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
-                      AI Image
-                    </Button>
+                    {/* Only show AI Image generator if platform is NOT youtube */}
+                    {formData.platform !== "youtube" && (
+                      <Button
+                        type="button"
+                        className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white h-[42px] gap-1.5 shadow-lg shadow-purple-500/10 text-xs col-span-1"
+                        onClick={handleGenerateAI}
+                        disabled={isGenerating}
+                      >
+                        {generatingAI ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
+                        AI Image
+                      </Button>
+                    )}
 
                     <Button
                       type="button"
@@ -495,6 +531,11 @@ const CreateCampaign = () => {
                       AI Video
                     </Button>
                   </div>
+
+                  
+
+                  {/* Creative Asset Guidelines */}
+                  
 
                   <AnimatePresence>
                     {isGenerating && (
@@ -530,7 +571,9 @@ const CreateCampaign = () => {
                   </div>
 
                   {formData.imageUrl && (
-                    <div className="relative rounded-lg overflow-hidden border border-border/50 aspect-video group">
+                    <div className={`relative rounded-lg overflow-hidden border border-border/50 group transition-all duration-300 ${
+                      formData.platform === "youtube" && isShort ? "aspect-[9/16] max-w-[240px] mx-auto" : "aspect-video"
+                    }`}>
                       <div className="relative w-full h-full bg-muted animate-pulse flex items-center justify-center">
                         <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
                         <img 
@@ -552,7 +595,9 @@ const CreateCampaign = () => {
                   )}
 
                   {formData.videoUrl && (
-                    <div className="relative rounded-lg overflow-hidden border border-accent/30 aspect-video group">
+                    <div className={`relative rounded-lg overflow-hidden border border-accent/30 group transition-all duration-300 ${
+                      formData.platform === "youtube" && isShort ? "aspect-[9/16] max-w-[240px] mx-auto" : "aspect-video"
+                    }`}>
                       <video src={formData.videoUrl} controls className="w-full h-full object-cover" />
                       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100">
                         <Button variant="destructive" size="sm" onClick={() => setFormData(prev => ({ ...prev, videoUrl: "" }))}>Remove</Button>
@@ -820,7 +865,9 @@ const CreateCampaign = () => {
               </div>
 
               {/* Mockup Media */}
-              <div className="aspect-square bg-muted flex items-center justify-center overflow-hidden relative">
+               <div className={`bg-muted flex items-center justify-center overflow-hidden relative transition-all duration-300 ${
+                formData.platform === "youtube" && isShort ? "aspect-[9/16]" : "aspect-square"
+              }`}>
                 {formData.videoUrl ? (
                   <video
                     src={formData.videoUrl}
