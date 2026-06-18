@@ -31,9 +31,14 @@ const SelectRole = () => {
         else if (role === "general" || role === "user") navigate("/dashboard", { replace: true });
         else navigate(`/${role}`, { replace: true });
       } else {
-        navigate("/onboarding", { replace: true });
+        // Only redirect to onboarding if they have selected a non-default role
+        const role = user.role.toLowerCase();
+        if (role !== "general" && role !== "user") {
+          navigate("/onboarding", { replace: true });
+        }
       }
     }
+
   }, [user, navigate]);
 
 
