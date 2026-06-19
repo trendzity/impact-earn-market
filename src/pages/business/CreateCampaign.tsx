@@ -18,6 +18,10 @@ import {
 import { getToken, getApiUrl, getServerUrl } from "@/utils/auth";
 import { toast } from "sonner";
 
+interface LinkedAccount {
+  platform: string;
+}
+
 const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 
 const CreateCampaign = () => {
@@ -47,7 +51,7 @@ const CreateCampaign = () => {
   });
 
   const [suggestingHashtags, setSuggestingHashtags] = useState(false);
-  const [linkedAccounts, setLinkedAccounts] = useState<any[]>([]);
+  const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
   const [fetchingAccounts, setFetchingAccounts] = useState(false);
 
   // Fetch linked accounts to show status in multichannel promo
@@ -192,6 +196,32 @@ const CreateCampaign = () => {
     if (formData.isSocialSync && !formData.imageUrl && !formData.videoUrl) {
       toast.error("An image or video is required for Social Media Sync.");
       return;
+    }
+
+    // Prevent submission if Social Sync is ON but platform is not connected
+    if (formData.isSocialSync) {
+      const isPlatformConnected = linkedAccounts.some(
+        (acc) => acc.platform?.toLowerCase() === formData.platform.toLowerCase()
+      );
+      if (!isPlatformConnected) {
+        toast.error(`Please connect your ${formData.platform.charAt(0).toUpperCase() + formData.platform.slice(1)} account in Settings first to use Social Media Sync.`);
+        return;
+      }
+    }
+
+    // Prevent submission if Multichannel Promo is ON but any of the target platforms are not connected
+    if (formData.isLinkedInSync) {
+      const requiredPlatforms = ["instagram", "facebook", "linkedin"];
+      const missingPlatforms = requiredPlatforms.filter(
+        (p) => !linkedAccounts.some((acc) => acc.platform?.toLowerCase() === p)
+      );
+      if (missingPlatforms.length > 0) {
+        const platformNames = missingPlatforms
+          .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+          .join(", ");
+        toast.error(`Please connect the following accounts in Settings to use Multichannel Promo: ${platformNames}`);
+        return;
+      }
     }
 
     try {

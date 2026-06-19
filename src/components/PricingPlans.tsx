@@ -43,7 +43,7 @@ const PricingPlans = () => (
         <p className="text-muted-foreground max-w-2xl mx-auto text-lg">Scale your social growth with flexible plans for everyone.</p>
       </motion.div>
 
-      <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
+      <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
         {plans.map((p, i) => (
           <motion.div
             key={p.name}
@@ -52,7 +52,7 @@ const PricingPlans = () => (
             viewport={{ once: true }}
             transition={{ delay: i * 0.15, duration: 0.6 }}
             whileHover={{ y: -8 }}
-            className={`rounded-3xl p-8 relative overflow-hidden transition-all duration-500 ${
+            className={`rounded-3xl p-8 relative overflow-hidden transition-all duration-500 flex flex-col h-full ${
               p.featured 
                 ? "bg-accent text-accent-foreground shadow-glow md:scale-105 border-2 border-accent" 
                 : "glass-card-hover"
@@ -72,7 +72,7 @@ const PricingPlans = () => (
               {p.period && <span className={`text-lg ${p.featured ? "text-accent-foreground/60" : "text-muted-foreground"}`}>{p.period}</span>}
             </div>
             
-            <ul className="space-y-3.5 mb-8">
+            <ul className="space-y-3.5 mb-8 flex-1">
               {p.features.map((f) => (
                 <li key={f} className="flex items-center gap-3 text-sm">
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${p.featured ? "bg-accent-foreground/20" : "bg-accent/10"}`}>
