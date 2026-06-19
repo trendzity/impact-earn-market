@@ -1,5 +1,5 @@
 
-import { Bell, Search, ChevronDown, Shield } from "lucide-react";
+import { Bell, Search, ChevronDown, Shield, Home } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { getUser } from "@/utils/auth";
 import { useNavigate } from "react-router-dom";
 
 import { useState, useEffect } from "react";
+import ThemeToggle from "../ThemeToggle";
 
 export function AdminTopNav() {
   const [user, setUser] = useState(getUser());
@@ -26,6 +27,15 @@ export function AdminTopNav() {
     <header className="h-14 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-4 gap-4 sticky top-0 z-20">
       <div className="flex items-center gap-3">
         <SidebarTrigger />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/")}
+          className="h-8 gap-1.5 text-foreground hover:bg-muted/50 rounded-lg transition-colors hidden sm:flex px-2"
+        >
+          <Home className="h-4 w-4" />
+          {/* <span className="text-xs font-medium">Home</span> */}
+        </Button>
         <div className="hidden md:flex items-center relative max-w-sm">
           <Search className="absolute left-2.5 h-3.5 w-3.5 text-muted-foreground" />
           <Input
@@ -40,6 +50,8 @@ export function AdminTopNav() {
           <Shield className="h-3.5 w-3.5" />
           <span className="text-xs font-semibold">Super Admin</span>
         </div>
+
+        <ThemeToggle/>
 
         <Button variant="ghost" size="icon" className="relative h-8 w-8">
           <Bell className="h-4 w-4" />

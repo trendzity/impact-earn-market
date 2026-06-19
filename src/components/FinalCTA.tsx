@@ -47,10 +47,10 @@ const FinalCTA = () => (
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
           >
-            <Button size="lg" className="bg-accent-foreground text-accent hover:bg-accent-foreground/90 text-base px-8 h-13 shadow-lg hover:shadow-xl transition-all duration-300 group">
+            <Button size="lg" className="bg-accent-foreground text-accent hover:bg-accent-foreground/90 text-base px-8 h-12 shadow-lg hover:shadow-xl transition-all duration-300 group">
               Join Free <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button size="lg" variant="outline" className="border-accent-foreground/30 text-accent-foreground hover:bg-accent-foreground/10 text-base px-8 h-13 transition-all duration-300">
+            <Button size="lg" variant="ghost" className="border border-accent-foreground/30 text-accent-foreground hover:bg-accent-foreground hover:text-accent text-base px-8 h-12 transition-all duration-300">
               Launch Campaign
             </Button>
           </motion.div>

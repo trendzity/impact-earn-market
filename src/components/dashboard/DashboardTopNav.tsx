@@ -1,5 +1,5 @@
 
-import { Bell, Wallet, ChevronDown, Search } from "lucide-react";
+import { Bell, Wallet, ChevronDown, Search, Home } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { getUser } from "@/utils/auth";
 import { useNavigate } from "react-router-dom";
 
 import { useState, useEffect } from "react";
+import ThemeToggle from "../ThemeToggle";
 
 export function DashboardTopNav() {
   const [user, setUser] = useState(getUser());
@@ -26,6 +27,16 @@ export function DashboardTopNav() {
     <header className="h-14 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-4 gap-4 sticky top-0 z-20">
       <div className="flex items-center gap-3">
         <SidebarTrigger />
+        {/* Back to Home Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/")}
+          className="h-8 gap-1.5 text-xs text-foreground hover:text-foreground hidden sm:flex px-2 hover:bg-muted/50 rounded-lg transition-colors"
+        >
+          <Home className="h-3.5 w-3.5" />
+          {/* <span>Home</span> */}
+        </Button>
         <div className="hidden md:flex items-center relative max-w-xs">
           <Search className="absolute left-2.5 h-3.5 w-3.5 text-muted-foreground" />
           <Input
@@ -41,6 +52,8 @@ export function DashboardTopNav() {
           <Wallet className="h-3.5 w-3.5 text-accent" />
           <span className="text-sm font-semibold text-foreground">₹1,240</span>
         </div>
+
+        <ThemeToggle/>
 
         {/* Notifications */}
         <Button variant="ghost" size="icon" className="relative h-8 w-8">

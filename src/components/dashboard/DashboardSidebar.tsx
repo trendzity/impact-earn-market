@@ -52,9 +52,9 @@ export function DashboardSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="p-4">
-        <NavLink to="/dashboard" className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-accent flex items-center justify-center shrink-0">
-            <Zap className="h-4 w-4 text-accent-foreground" />
+        <NavLink to="/" className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-lg bg-accent flex items-center justify-center font-bold text-sm text-accent-foreground shrink-0 shadow-glow">
+            T
           </div>
           {!collapsed && (
             <span className="font-display text-lg font-bold tracking-tight text-foreground">
@@ -91,7 +91,7 @@ export function DashboardSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton 
                   onClick={handleLogout}
-                  className="flex items-center gap-3 text-red-500 hover:text-red-600 hover:bg-red-50/10"
+                  className="flex items-center gap-3 text-red-500 hover:text-red-600 hover:bg-muted"
                 >
                   <LogOut className="h-4 w-4 shrink-0" />
                   {!collapsed && <span>Logout</span>}
