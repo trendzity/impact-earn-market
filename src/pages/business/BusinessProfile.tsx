@@ -11,10 +11,42 @@ import { toast } from "sonner";
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
+interface ProfileData {
+  companyName?: string;
+  website?: string;
+  bio?: string;
+}
+
+interface LinkedAccount {
+  platform: string;
+  stats?: {
+    channelName?: string;
+    subscribers?: string | number;
+    views?: string | number;
+    videos?: string | number;
+    username?: string;
+    followersCount?: string | number;
+    mediaCount?: string | number;
+    pageName?: string;
+    likesCount?: string | number;
+    fullName?: string;
+    headline?: string;
+    email?: string;
+  };
+}
+
+interface DashboardStats {
+  activeCampaigns?: number;
+  totalSpent?: number;
+  totalEngagement?: number;
+  pendingApprovals?: number;
+}
+
 const BusinessProfile = () => {
   const [user] = useState(getUser());
-  const [profileData, setProfileData] = useState<any>(null);
-  const [linkedAccounts, setLinkedAccounts] = useState<any[]>([]);
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
 
@@ -47,6 +79,13 @@ const BusinessProfile = () => {
             const data = await response.json();
             setLinkedAccounts(data);
           }
+          const statsResponse = await fetch(getApiUrl("/stats/dashboard"), {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (statsResponse.ok) {
+            const statsData = await statsResponse.json();
+            setDashboardStats(statsData.data);
+          }
         }
       } catch (error) {
         console.error("Error fetching linked accounts:", error);
@@ -54,7 +93,7 @@ const BusinessProfile = () => {
       setLoading(false);
     };
     loadData();
-  }, []);
+  }, [searchParams]);
 
   const youtubeAccount = linkedAccounts.find(acc => acc.platform === "youtube");
   const ytStats = youtubeAccount?.stats;
@@ -364,19 +403,21 @@ const BusinessProfile = () => {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Active Campaigns</span>
-                  <span className="text-sm font-bold text-foreground">0</span>
+                  <span className="text-sm font-bold text-foreground">{dashboardStats?.activeCampaigns || "0"}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Influencer Reach</span>
-                  <span className="text-sm font-bold text-foreground">0</span>
+                  <span className="text-sm font-bold text-foreground">{formatNumber((dashboardStats?.totalEngagement || 0) * 1.5)}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Total Engagement</span>
-                  <span className="text-sm font-bold text-foreground">0</span>
+                  <span className="text-sm font-bold text-foreground">{formatNumber(dashboardStats?.totalEngagement || 0)}</span>
                 </div>
-                <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl mt-2">
-                  Create New Campaign
-                </Button>
+                <Link to="/business/create-campaign" className="block w-full">
+                  <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90 rounded-xl mt-2">
+                    Create New Campaign
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </motion.div>
@@ -390,7 +431,7 @@ const BusinessProfile = () => {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="h-2 w-2 rounded-full bg-green-500" />
-                    <p className="text-xs text-muted-foreground">Account active since {new Date(user?.createdAt).toLocaleDateString()}</p>
+                    <p className="text-xs text-muted-foreground">Account active since {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="h-2 w-2 rounded-full bg-blue-500" />

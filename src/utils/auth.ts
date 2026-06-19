@@ -12,6 +12,12 @@ export interface UserData {
   bio?: string;
   campaignGoal?: string;
   socialHandle?: string;
+  createdAt?: string;
+}
+
+interface ProfileResponse{
+  user:UserData;
+  profile?: Record<string, unknown> | null;
 }
 
 import { API_BASE_URL, getEnvConfigError } from "@/config/env";
@@ -123,7 +129,7 @@ export const fetchProfile = async () => {
     if (!token) return null;
 
     const { apiFetch } = await import("@/utils/api");
-    const result = await apiFetch<any>("/profile");
+    const result = await apiFetch<ProfileResponse>("/profile");
     if (!result.ok) return null;
 
     const data = result.data;

@@ -17,10 +17,28 @@ const statusColor: Record<string, string> = {
 
 const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 
+interface Campaign {
+  id: string;
+  title: string;
+  platform: string;
+  budget: string | number;
+  reward: string | number;
+  link: string;
+  status: string;
+}
+
 const BusinessCampaigns = () => {
-  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [platformFilter, setPlatformFilter] = useState("all-platform");
+
+   const filteredCampaigns = campaigns.filter((c) => {
+    const matchesStatus = statusFilter === "all" || c.status.toLowerCase() === statusFilter.toLowerCase();
+    const matchesPlatform = platformFilter === "all-platform" || c.platform.toLowerCase() === platformFilter.toLowerCase();
+    return matchesStatus && matchesPlatform;
+  });
 
   useEffect(() => {
     fetchCampaigns();
@@ -83,7 +101,7 @@ const BusinessCampaigns = () => {
           <p className="text-sm text-muted-foreground">Manage all your marketing campaigns</p>
         </div>
         <div className="flex gap-2">
-          <Select defaultValue="all">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-32 h-8 text-sm"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
@@ -92,14 +110,14 @@ const BusinessCampaigns = () => {
               <SelectItem value="completed">Completed</SelectItem>
             </SelectContent>
           </Select>
-          <Select defaultValue="all-platform">
+          <Select value={platformFilter} onValueChange={setPlatformFilter}>
             <SelectTrigger className="w-32 h-8 text-sm"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all-platform">All Platforms</SelectItem>
               <SelectItem value="instagram">Instagram</SelectItem>
               <SelectItem value="youtube">YouTube</SelectItem>
-              <SelectItem value="telegram">Telegram</SelectItem>
-              <SelectItem value="twitter">Twitter</SelectItem>
+              <SelectItem value="facebook">Facebook</SelectItem>
+              <SelectItem value="linkedin">Linkedin</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -116,7 +134,11 @@ const BusinessCampaigns = () => {
               <div className="py-20 text-center">
                 <p className="text-muted-foreground">No campaigns found. Launch your first one!</p>
               </div>
-            ) : (
+            ) : filteredCampaigns.length === 0 ? (
+              <div className="py-20 text-center">
+                <p className="text-muted-foreground">No campaigns match the selected filters.</p>
+              </div>
+              ): (
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/50">
@@ -130,7 +152,7 @@ const BusinessCampaigns = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {campaigns.map((c) => (
+                  {filteredCampaigns.map((c) => (
                     <TableRow key={c.id} className="border-border/30">
                       <TableCell className="font-medium text-foreground">{c.title}</TableCell>
                       <TableCell>
@@ -143,7 +165,9 @@ const BusinessCampaigns = () => {
                           <a href={c.link} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline text-xs truncate max-w-[150px] block">
                             {c.link}
                           </a>
-                        ) : (
+                        ) : c.status.toLowerCase().startsWith("pending") ? (
+                          <span className="text-yellow-500 text-[10px] font-bold uppercase">VERIFICATION PENDING</span>
+                          ) : (
                           <span className="text-red-500 text-[10px] font-bold">LINK MISSING</span>
                         )}
                       </TableCell>
