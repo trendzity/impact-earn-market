@@ -8,7 +8,18 @@
     <meta name="description" content="Trendzity is a social growth marketplace where users earn rewards, businesses launch micro campaigns, and influencers monetize their audience.">
     <meta name="author" content="Trendzity" />
 
-    
+    <script>
+      (function() {
+        const theme = localStorage.getItem("theme");
+        const isDark = theme === "dark" || (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        if (isDark) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
+
     
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/85b1d0c5-4b14-4705-970a-eff492ff466c/id-preview-fa41ce4c--fcaf0d76-35ab-443a-9935-31b46eef607a.lovable.app-1773253515361.png">
