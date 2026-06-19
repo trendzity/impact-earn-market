@@ -19,11 +19,21 @@ import { getUser } from "@/utils/auth";
 export const AuthOnlyRoute = () => {
   const user = getUser();
 
+  
   // Not logged in
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // Logged in → allow access
+  // Already onboarded → redirect to their dashboard
+  if (user.onboarded && user.role) {
+    const role = user.role.toLowerCase();
+    if (role === "admin") return <Navigate to="/admin" replace />;
+    if (role === "general" || role === "user") return <Navigate to="/dashboard" replace />;
+    return <Navigate to={`/${role}`} replace />;
+  }
+
+  // Logged in but not onboarded → allow access to role selection / onboarding
   return <Outlet />;
+
 };

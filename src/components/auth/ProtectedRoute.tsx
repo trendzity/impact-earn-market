@@ -1,10 +1,19 @@
 
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { getUser } from "@/utils/auth";
+import { fetchProfile, getUser } from "@/utils/auth";
+import { useEffect } from "react";
 
 export const ProtectedRoute = () => {
   const user = getUser();
   const location = useLocation();
+
+    useEffect(() => {
+    if (user) {
+      // Fetch fresh, verified profile from database and update localStorage
+      fetchProfile();
+    }
+  }, [location.pathname]);
+
 
   if (!user) {
     // Not logged in
