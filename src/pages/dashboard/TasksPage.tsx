@@ -248,9 +248,27 @@ const TasksPage = () => {
                             size="sm" 
                             disabled={joiningId === task.id || task.isJoined}
                             onClick={(e) => !task.isJoined && handleJoin(e, task.id)}
-                            className={`mt-1 h-7 text-xs ${task.isJoined ? "bg-green-500/10 text-green-600 border border-green-500/20" : "bg-accent text-accent-foreground hover:bg-accent/90"}`}
+                            className={`mt-1 h-7 text-xs ${
+                              task.isJoined 
+                                ? task.userTaskStatus === "approved"
+                                  ? "bg-green-500/10 text-green-600 border border-green-500/20"
+                                  : task.userTaskStatus === "submitted"
+                                    ? "bg-yellow-500/10 text-yellow-600 border border-yellow-500/20"
+                                    : task.userTaskStatus === "rejected"
+                                      ? "bg-red-500/10 text-red-600 border border-red-500/20"
+                                      : "bg-blue-500/10 text-blue-600 border border-blue-500/20"
+                                : "bg-accent text-accent-foreground hover:bg-accent/90"
+                            }`}
                           >
-                            {joiningId === task.id ? <Loader2 className="h-3 w-3 animate-spin" /> : task.isJoined ? (task.isSubmitted ? "Submitted" : "Joined") : "Start Task"}
+                            {joiningId === task.id ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : task.isJoined ? (
+                              task.userTaskStatus === "approved" ? "Completed" :
+                              task.userTaskStatus === "submitted" ? "Submitted" :
+                              task.userTaskStatus === "rejected" ? "Rejected" : "Joined"
+                            ) : (
+                              "Start Task"
+                            )}
                           </Button>
                           {task.isSubmitted && task.proofUrl && (
                             <button 
@@ -360,23 +378,39 @@ const TasksPage = () => {
               </div>
 
               {selectedTask.isJoined ? (
-                <>
-                  <div className="border border-dashed border-border rounded-lg p-6 text-center mb-4 cursor-pointer hover:bg-muted/50 transition-all"
-                    onClick={() => handleSubmitProof(selectedTask)}>
-                    <Upload className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">Click here to upload proof (screenshot)</p>
-                    <p className="text-[10px] text-red-500 font-medium mt-1">Max: 5MB (JPG, PNG) | 20MB (MP4)</p>
-                    {submittingId === selectedTask.id && <Loader2 className="h-4 w-4 animate-spin mx-auto mt-2" />}
+                selectedTask.userTaskStatus === "approved" ? (
+                  <div className="bg-green-500/10 border border-green-500/20 text-green-600 rounded-lg p-4 text-center font-bold text-sm">
+                    Task Completed! Reward has been credited to your wallet. ✅
                   </div>
+                ) : selectedTask.userTaskStatus === "submitted" ? (
+                  <div className="bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 rounded-lg p-4 text-center font-bold text-sm">
+                    Proof Submitted! Awaiting business review. ⏳
+                  </div>
+                ) : (
+                  <>
+                    {selectedTask.userTaskStatus === "rejected" && selectedTask.adminNote && (
+                      <div className="bg-red-500/10 border border-red-500/20 text-red-600 rounded-lg p-3 text-xs mb-4 leading-relaxed font-medium">
+                        <strong>Previous Submission Rejected:</strong> "{selectedTask.adminNote}"
+                        <p className="mt-1 text-[10px] text-red-500 font-bold">Please upload a valid screenshot and try again.</p>
+                      </div>
+                    )}
+                    <div className="border border-dashed border-border rounded-lg p-6 text-center mb-4 cursor-pointer hover:bg-muted/50 transition-all"
+                      onClick={() => handleSubmitProof(selectedTask)}>
+                      <Upload className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">Click here to upload proof (screenshot)</p>
+                      <p className="text-[10px] text-red-500 font-medium mt-1">Max: 5MB (JPG, PNG) | 20MB (MP4)</p>
+                      {submittingId === selectedTask.id && <Loader2 className="h-4 w-4 animate-spin mx-auto mt-2" />}
+                    </div>
 
-                  <Button 
-                    onClick={() => handleSubmitProof(selectedTask)}
-                    disabled={submittingId === selectedTask.id}
-                    className="w-full bg-[#ef4444] hover:bg-[#dc2626] text-white shadow-lg shadow-red-500/10 font-bold"
-                  >
-                    {submittingId === selectedTask.id ? "Submitting..." : "Submit Task"}
-                  </Button>
-                </>
+                    <Button 
+                      onClick={() => handleSubmitProof(selectedTask)}
+                      disabled={submittingId === selectedTask.id}
+                      className="w-full bg-[#ef4444] hover:bg-[#dc2626] text-white shadow-lg shadow-red-500/10 font-bold"
+                    >
+                      {submittingId === selectedTask.id ? "Submitting..." : selectedTask.userTaskStatus === "rejected" ? "Resubmit Proof" : "Submit Task"}
+                    </Button>
+                  </>
+                )
               ) : (
                 <Button 
                   onClick={(e) => handleJoin(e, selectedTask.id)}

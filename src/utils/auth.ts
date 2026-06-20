@@ -1,4 +1,5 @@
 export interface UserData {
+  id?:string;
   name: string;
   email: string;
   profileImage?: string;
@@ -12,6 +13,8 @@ export interface UserData {
   bio?: string;
   campaignGoal?: string;
   socialHandle?: string;
+  primaryCategory?: string;
+  secondaryCategory?: string;
   createdAt?: string;
 }
 

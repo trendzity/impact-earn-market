@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -19,7 +18,7 @@ const Onboarding = () => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Form State
-  const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
@@ -29,7 +28,10 @@ const Onboarding = () => {
     bio: "",
     campaignGoal: "",
     socialHandle: "",
+    primaryCategory: "",   // New field
+    secondaryCategory: "", // New field
   });
+
 
   useEffect(() => {
     if (!user) {
@@ -42,12 +44,13 @@ const Onboarding = () => {
       const profileInfo = await fetchProfile();
       if (profileInfo) {
         const u = profileInfo.user;
-        const p = profileInfo.profile || {};
+        const p = (profileInfo.profile || {}) as any;
+
         setUser(u); // Update local user state with fresh data from server
         
         // Only set form data if it hasn't been initialized yet to avoid overwriting user typing
         if (!isInitialized) {
-          setFormData({
+            setFormData({
             name: u.name || "",
             email: u.email || "",
             phone: p.phone || "",
@@ -57,6 +60,8 @@ const Onboarding = () => {
             bio: p.bio || "",
             campaignGoal: p.campaignGoal || "",
             socialHandle: p.socialHandle || "",
+            primaryCategory: p.primaryCategory || "",   // New field
+            secondaryCategory: p.secondaryCategory || "", // New field
           });
           setIsInitialized(true);
         }
@@ -98,7 +103,7 @@ const Onboarding = () => {
         throw new Error("Failed to save profile");
       }
       
-      updateUser({ ...formData, onboarded: true });
+      updateUser({ ...formData, onboarded: true } as any);
       toast.success("Profile setup complete!");
       
       const normalizedRole = user?.role?.toLowerCase();
@@ -114,35 +119,6 @@ const Onboarding = () => {
       toast.error("An error occurred while saving. Please try again.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleSkip = async () => {
-    try {
-      const token = getToken();
-      // Skip means we just create an empty profile to mark as onboarded
-      const url = getApiUrl("/profile");
-      await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ data: {} })
-      });
-
-      
-      updateUser({ onboarded: true }); // Mark as seen locally
-      const normalizedRole = user?.role?.toLowerCase();
-      const rolePaths: Record<string, string> = {
-        general: "/dashboard",
-        business: "/business",
-        influencer: "/influencer",
-        reseller: "/reseller"
-      };
-      navigate(rolePaths[normalizedRole || "general"] || "/dashboard");
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -298,7 +274,7 @@ const Onboarding = () => {
                   </>
                 )}
 
-                {user.role === 'influencer' && (
+                                {user.role === 'influencer' && (
                   <>
                     <div className="space-y-2">
                       <Label htmlFor="socialHandle">Primary Social Handle *</Label>
@@ -310,11 +286,58 @@ const Onboarding = () => {
                         onChange={(e) => setFormData({...formData, socialHandle: e.target.value})}
                       />
                     </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="primaryCategory">Primary Niche Category *</Label>
+                        <select 
+                          id="primaryCategory"
+                          className="flex h-10 w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-accent outline-none"
+                          required
+                          value={formData.primaryCategory}
+                          onChange={(e) => setFormData({...formData, primaryCategory: e.target.value})}
+                        >
+                          <option value="">Select Primary Category</option>
+                          <option value="tech">Tech & AI</option>
+                          <option value="finance">Finance</option>
+                          <option value="forex">Forex & Trading</option>
+                          <option value="food">Food & Cooking</option>
+                          <option value="lifestyle">Lifestyle & Fashion</option>
+                          <option value="beauty">Beauty & Cosmetics</option>
+                          <option value="gaming">Gaming</option>
+                          <option value="travel">Travel</option>
+                          <option value="fitness">Fitness & Health</option>
+                          <option value="education">Education</option>
+                        </select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="secondaryCategory">Secondary Niche Category (Optional)</Label>
+                        <select 
+                          id="secondaryCategory"
+                          className="flex h-10 w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-accent outline-none"
+                          value={formData.secondaryCategory}
+                          onChange={(e) => setFormData({...formData, secondaryCategory: e.target.value})}
+                        >
+                          <option value="">Select Secondary Category</option>
+                          <option value="tech">Tech & AI</option>
+                          <option value="finance">Finance</option>
+                          <option value="forex">Forex & Trading</option>
+                          <option value="food">Food & Cooking</option>
+                          <option value="lifestyle">Lifestyle & Fashion</option>
+                          <option value="beauty">Beauty & Cosmetics</option>
+                          <option value="gaming">Gaming</option>
+                          <option value="travel">Travel</option>
+                          <option value="fitness">Fitness & Health</option>
+                          <option value="education">Education</option>
+                        </select>
+                      </div>
+                    </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="bio">Bio / Niche</Label>
+                      <Label htmlFor="bio">Bio</Label>
                       <textarea 
                         id="bio" 
-                        placeholder="e.g. Tech reviewer, Fitness enthusiast..." 
+                        placeholder="e.g. Tell brands what kind of content you create..." 
                         className="min-h-[80px] w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-accent outline-none"
                         value={formData.bio}
                         onChange={(e) => setFormData({...formData, bio: e.target.value})}
@@ -324,14 +347,7 @@ const Onboarding = () => {
                 )}
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
-                <button 
-                  type="button" 
-                  onClick={handleSkip}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Skip for now
-                </button>
+              <div className="flex justify-end pt-4">
                 <Button 
                   type="submit" 
                   className="w-full sm:w-auto px-12 bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20"

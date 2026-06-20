@@ -19,6 +19,18 @@ const notificationsList = [
   { label: "Weekly analytics report", enabled: false },
   { label: "Platform announcements", enabled: false },
 ];
+const categoryOptions = [
+  { value: "tech", label: "Tech & AI" },
+  { value: "finance", label: "Finance" },
+  { value: "forex", label: "Forex & Trading" },
+  { value: "food", label: "Food & Cooking" },
+  { value: "lifestyle", label: "Lifestyle & Fashion" },
+  { value: "beauty", label: "Beauty & Cosmetics" },
+  { value: "gaming", label: "Gaming" },
+  { value: "travel", label: "Travel" },
+  { value: "fitness", label: "Fitness & Health" },
+  { value: "education", label: "Education" },
+];
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } } };
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
@@ -30,6 +42,20 @@ const InfluencerSettings = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [linkedAccounts, setLinkedAccounts] = useState<any[]>([]);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+    const [categories, setCategories] = useState({
+    primaryCategory: "",
+    secondaryCategory: "",
+    lastCategoryUpdate: null as string | null,
+    categoryVerificationStatus: "APPROVED"
+  });
+  const [tempCategories, setTempCategories] = useState({
+    primaryCategory: "",
+    secondaryCategory: ""
+  });
+  const [isEditingCategories, setIsEditingCategories] = useState(false);
+  const [savingCategories, setSavingCategories] = useState(false);
+
   
   const [form, setForm] = useState({
     name: "",
@@ -46,7 +72,7 @@ const InfluencerSettings = () => {
     const loadData = async () => {
       setLoading(true);
       await fetchLinkedAccounts();
-      const profileInfo = await fetchProfile();
+      const profileInfo = (await fetchProfile()) as any;
       if (profileInfo) {
         setUser(profileInfo.user);
         const formData = {
@@ -58,11 +84,61 @@ const InfluencerSettings = () => {
         };
         setForm(formData);
         setOriginalForm(formData);
+
+        if (profileInfo.profile) {
+          setCategories({
+            primaryCategory: profileInfo.profile.primaryCategory || "",
+            secondaryCategory: profileInfo.profile.secondaryCategory || "",
+            lastCategoryUpdate: profileInfo.profile.lastCategoryUpdate || null,
+            categoryVerificationStatus: profileInfo.profile.categoryVerificationStatus || "APPROVED"
+          });
+        }
       }
+
       setLoading(false);
     };
     loadData();
   }, []);
+
+    const handleSaveCategories = async () => {
+    if (!tempCategories.primaryCategory) {
+      toast.error("Primary category is required");
+      return;
+    }
+    setSavingCategories(true);
+    try {
+      const response = await fetch(getApiUrl("/profile/category"), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({
+          primaryCategory: tempCategories.primaryCategory,
+          secondaryCategory: tempCategories.secondaryCategory || null,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        toast.success("Categories submitted for verification successfully");
+        setCategories({
+          primaryCategory: data.profile.primaryCategory,
+          secondaryCategory: data.profile.secondaryCategory || "",
+          lastCategoryUpdate: data.profile.lastCategoryUpdate,
+          categoryVerificationStatus: data.profile.categoryVerificationStatus,
+        });
+        setIsEditingCategories(false);
+      } else {
+        toast.error(data.message || "Failed to update categories");
+      }
+    } catch (error) {
+      toast.error("An error occurred while saving categories");
+    } finally {
+      setSavingCategories(false);
+    }
+  };
+
 
   const fetchLinkedAccounts = async () => {
     try {
@@ -313,6 +389,136 @@ const InfluencerSettings = () => {
           </CardContent>
         </Card>
       </motion.div>
+
+            <motion.div variants={itemVariants}>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">Niche & Categories</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-border/30">
+              <div>
+                <p className="text-xs text-muted-foreground">Verification Status</p>
+                <p className="text-sm font-bold text-foreground mt-0.5">
+                  {categories.categoryVerificationStatus === "PENDING" && (
+                    <Badge className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20 text-[10px]">
+                      Awaiting Verification
+                    </Badge>
+                  )}
+                  {categories.categoryVerificationStatus === "APPROVED" && (
+                    <Badge className="bg-green-500/10 text-green-600 border-green-500/20 text-[10px]">
+                      Verified & Active
+                    </Badge>
+                  )}
+                  {categories.categoryVerificationStatus === "REJECTED" && (
+                    <Badge className="bg-red-500/10 text-red-600 border-red-500/20 text-[10px]">
+                      Rejected
+                    </Badge>
+                  )}
+                </p>
+              </div>
+              {categories.lastCategoryUpdate && (
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground">Last Updated</p>
+                  <p className="text-xs font-semibold text-foreground mt-0.5">
+                    {new Date(categories.lastCategoryUpdate).toLocaleDateString()}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {!isEditingCategories ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-muted-foreground">Primary Niche Category</p>
+                  <p className="text-sm font-bold text-foreground mt-1 capitalize">
+                    {categoryOptions.find(o => o.value === categories.primaryCategory)?.label || categories.primaryCategory || "Not Set"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Secondary Niche Category</p>
+                  <p className="text-sm font-bold text-foreground mt-1 capitalize">
+                    {categoryOptions.find(o => o.value === categories.secondaryCategory)?.label || categories.secondaryCategory || "Not Set"}
+                  </p>
+                </div>
+                <div className="sm:col-span-2 pt-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      if (categories.lastCategoryUpdate) {
+                        const cooldownPeriod = 30 * 24 * 60 * 60 * 1000;
+                        const timeElapsed = Date.now() - new Date(categories.lastCategoryUpdate).getTime();
+                        if (timeElapsed < cooldownPeriod) {
+                          const daysLeft = Math.ceil((cooldownPeriod - timeElapsed) / (24 * 60 * 60 * 1000));
+                          toast.error(`Categories are locked. You can edit them again in ${daysLeft} days.`);
+                          return;
+                        }
+                      }
+                      setTempCategories({
+                        primaryCategory: categories.primaryCategory,
+                        secondaryCategory: categories.secondaryCategory
+                      });
+                      setIsEditingCategories(true);
+                    }}
+                    className="text-xs h-8 border-accent/20 hover:bg-accent/5 hover:text-accent"
+                  >
+                    Update Categories
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="p-3 bg-yellow-500/5 border border-yellow-500/10 rounded-xl text-xs text-yellow-700 leading-normal">
+                  ⚠️ <strong>Note:</strong> Changing your niche categories will reset your status to <strong>Pending</strong> for admin verification, and will lock updates for <strong>30 days</strong>.
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs text-muted-foreground block">Primary Niche Category *</label>
+                    <select
+                      className="flex h-9 w-full rounded-md border border-input bg-background/50 px-3 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                      value={tempCategories.primaryCategory}
+                      onChange={(e) => setTempCategories({ ...tempCategories, primaryCategory: e.target.value })}
+                    >
+                      <option value="">Select Primary Category</option>
+                      {categoryOptions.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-muted-foreground block">Secondary Niche Category</label>
+                    <select
+                      className="flex h-9 w-full rounded-md border border-input bg-background/50 px-3 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                      value={tempCategories.secondaryCategory}
+                      onChange={(e) => setTempCategories({ ...tempCategories, secondaryCategory: e.target.value })}
+                    >
+                      <option value="">Select Secondary Category</option>
+                      {categoryOptions.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <Button variant="outline" size="sm" onClick={() => setIsEditingCategories(false)} disabled={savingCategories}>
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-accent text-accent-foreground"
+                    onClick={handleSaveCategories}
+                    disabled={savingCategories}
+                  >
+                    {savingCategories ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit for Verification"}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+
 
       <motion.div variants={itemVariants}>
         <Card>

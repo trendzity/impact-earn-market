@@ -6,6 +6,7 @@ import { Megaphone, IndianRupee, Users, Clock, TrendingUp, ArrowUpRight } from "
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { getUser, fetchProfile, getToken, getApiUrl } from "@/utils/auth";
 import { ProfileOverviewCard } from "@/components/dashboard/ProfileOverviewCard";
+import { Link } from "react-router-dom";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
@@ -94,9 +95,19 @@ const BusinessHome = () => {
         <p className="text-sm text-muted-foreground">Overview of your campaigns and performance</p>
       </motion.div>
 
+      {linkedAccounts.length === 0 && (
+        <motion.div variants={item} className="p-4 rounded-xl border border-red-500/20 bg-red-500/5 text-xs text-red-600 flex items-center gap-3">
+          <span className="text-sm">⚠️</span>
+          <div>
+            <strong>Social Account Required:</strong> To enable automated Social Sync and Multichannel cross-posting on campaigns, you must first connect your official brand accounts in your <Link to="/business/settings" className="underline font-bold">Settings</Link>.
+          </div>
+        </motion.div>
+      )}
+
       <motion.div variants={item}>
         <ProfileOverviewCard user={user} profileData={profileData} linkedAccounts={linkedAccounts} />
       </motion.div>
+
 
       {/* Stats */}
       <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
