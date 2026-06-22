@@ -22,6 +22,7 @@ import {
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Bar, BarChart } from "recharts";
 import { getUser, fetchProfile, getToken, getApiUrl } from "@/utils/auth";
 import { ProfileOverviewCard } from "@/components/dashboard/ProfileOverviewCard";
+import { Link } from "react-router-dom";
 
 const earningsData = [
   { week: "W1", earnings: 2400 },
@@ -162,9 +163,19 @@ const InfluencerHome = () => {
         <p className="text-sm text-muted-foreground">Welcome back! Here's your performance overview.</p>
       </motion.div>
 
+      {linkedAccounts.length === 0 && (
+        <motion.div variants={itemVariants} className="p-4 rounded-xl border border-red-500/20 bg-red-500/5 text-xs text-red-600 flex items-center gap-3">
+          <span className="text-sm">⚠️</span>
+          <div>
+            <strong>Social Account Required:</strong> To view/join premium category sponsorship deals and sync your task engagement stats, you must connect your social channels in your <Link to="/influencer/settings" className="underline font-bold">Settings</Link>.
+          </div>
+        </motion.div>
+      )}
+
       <motion.div variants={itemVariants}>
         <ProfileOverviewCard user={user} profileData={profileData} linkedAccounts={linkedAccounts} />
       </motion.div>
+
 
       {/* Social Insights Grid (Neat Cards) */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

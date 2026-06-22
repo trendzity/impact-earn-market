@@ -147,9 +147,10 @@ export default function AdminCampaigns() {
                           c.status === "active" ? "bg-green-500/10 text-green-600 border-green-500/20" :
                           c.status === "pending" ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" :
                           c.status === "rejected" ? "bg-red-500/10 text-red-600 border-red-500/20" :
+                          c.status === "admin_paused" ? "bg-orange-500/10 text-orange-600 border-orange-500/20" :
                           "bg-slate-500/10 text-slate-600 border-slate-500/20"
                         }`}>
-                          {c.status.toUpperCase()}
+                          {c.status === "admin_paused" ? "ADMIN PAUSED" : c.status.toUpperCase()}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -163,7 +164,7 @@ export default function AdminCampaigns() {
                           {c.status === "active" && (
                             <Button onClick={() => updateStatus(c.id, "paused")} variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground"><Pause className="h-4 w-4" /></Button>
                           )}
-                          {c.status === "paused" && (
+                          {(c.status === "paused" || c.status === "admin_paused") && (
                             <Button onClick={() => updateStatus(c.id, "active")} variant="ghost" size="icon" className="h-8 w-8 text-green-500"><Play className="h-4 w-4" /></Button>
                           )}
                           <Button onClick={() => setSelectedCampaign(c)} variant="ghost" size="icon" className="h-8 w-8 hover:text-accent"><Eye className="h-4 w-4" /></Button>
@@ -273,6 +274,11 @@ export default function AdminCampaigns() {
                   {selectedCampaign.status === "active" && (
                     <Button onClick={() => updateStatus(selectedCampaign.id, "paused")} variant="outline" className="gap-2">
                       <Pause className="h-4 w-4" /> PAUSE CAMPAIGN
+                    </Button>
+                  )}
+                  {(selectedCampaign.status === "paused" || selectedCampaign.status === "admin_paused") && (
+                    <Button onClick={() => updateStatus(selectedCampaign.id, "active")} className="bg-green-600 hover:bg-green-700 text-white gap-2">
+                      <Play className="h-4 w-4" /> RESUME CAMPAIGN
                     </Button>
                   )}
                 </div>

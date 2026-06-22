@@ -2,6 +2,6 @@
   <!-- Red rounded box matching your brand theme -->
   <rect width="100" height="100" rx="25" fill="hsl(0, 85%, 50%)"/>
   
-  <!-- Centered white letter 'T' scaled to match text-sm ratio -->
-  <text x="50" y="50" font-family="'Space Grotesk', system-ui, sans-serif" font-weight="bold" font-size="44" fill="white" text-anchor="middle" dominant-baseline="central">T</text>
+  <!-- Centered white letter 'T' scaled to be somewhat larger (font-size 58 instead of 44) -->
+  <text x="50" y="50" font-family="'Space Grotesk', system-ui, sans-serif" font-weight="bold" font-size="58" fill="white" text-anchor="middle" dominant-baseline="central">T</text>
 </svg>

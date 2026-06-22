@@ -283,26 +283,50 @@ const InfluencerCampaigns = () => {
                                   {joiningId === campaign.id ? <Loader2 className="h-3 w-3 animate-spin" /> : campaign.isJoined ? <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Joined</span> : !isLinked ? <span className="flex items-center gap-1"><Lock className="h-3 w-3" /> Connect Account</span> : "Join Now"}
                                 </Button>
                               ) : (
-                                <div className="flex gap-2">
-                                  {campaign.taskStatus === "pending" ? (
-                                    <Button size="sm" onClick={() => handleUploadProof(campaign.taskId)} disabled={submittingId === campaign.taskId} className="h-8 text-xs px-4 font-bold shadow-lg bg-[#ef4444] hover:bg-[#dc2626] text-white shadow-red-500/10">
-                                      {submittingId === campaign.taskId ? <Loader2 className="h-3 w-3 animate-spin" /> : "Submit Proof"}
-                                    </Button>
-                                  ) : (
-                                    <>
-                                      <Button size="sm" variant="outline" className={`h-8 text-xs px-4 font-bold ${campaign.taskStatus === "submitted" ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" : "bg-green-500/10 text-green-600 border-green-500/20"}`}>
+                                <div className="flex flex-col items-center gap-1.5">
+                                  <div className="flex gap-2 items-center">
+                                    {campaign.taskStatus === "pending" || campaign.taskStatus === "rejected" ? (
+                                      <Button 
+                                        size="sm" 
+                                        onClick={() => handleUploadProof(campaign.taskId)} 
+                                        disabled={submittingId === campaign.taskId} 
+                                        className="h-8 text-xs px-4 font-bold shadow-lg bg-[#ef4444] hover:bg-[#dc2626] text-white shadow-red-500/10"
+                                      >
+                                        {submittingId === campaign.taskId ? (
+                                          <Loader2 className="h-3 w-3 animate-spin" />
+                                        ) : campaign.taskStatus === "rejected" ? (
+                                          "Resubmit Proof"
+                                        ) : (
+                                          "Submit Proof"
+                                        )}
+                                      </Button>
+                                    ) : (
+                                      <Button 
+                                        size="sm" 
+                                        variant="outline" 
+                                        className={`h-8 text-xs px-4 font-bold ${
+                                          campaign.taskStatus === "submitted" 
+                                            ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" 
+                                            : "bg-green-500/10 text-green-600 border-green-500/20"
+                                        }`}
+                                      >
                                         {campaign.taskStatus === "submitted" ? "Awaiting Review" : "Approved ✅"}
                                       </Button>
-                                      {campaign.proofUrl && (
-                                        <Button size="sm" variant="ghost" onClick={() => setPreviewProof(campaign.proofUrl)} className="h-8 px-2 text-muted-foreground hover:text-accent">
-                                          <Eye className="h-4 w-4" />
-                                        </Button>
-                                      )}
-                                    </>
+                                    )}
+                                    {campaign.proofUrl && (
+                                      <Button size="sm" variant="ghost" onClick={() => setPreviewProof(campaign.proofUrl)} className="h-8 px-2 text-muted-foreground hover:text-accent">
+                                        <Eye className="h-4 w-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                  {campaign.taskStatus === "rejected" && campaign.adminNote && (
+                                    <p className="text-[10px] text-red-500 font-medium max-w-[200px] text-center italic">
+                                      Rejected: "{campaign.adminNote}"
+                                    </p>
                                   )}
                                 </div>
                               )}
-                              {activeTab === "my-tasks" && campaign.taskStatus === "pending" && (
+                              {activeTab === "my-tasks" && (campaign.taskStatus === "pending" || campaign.taskStatus === "rejected") && (
                                 <p className="text-[9px] text-red-500 font-medium mt-1">Max: 5MB (JPG, PNG) | 20MB (MP4)</p>
                               )}
                             </div>
