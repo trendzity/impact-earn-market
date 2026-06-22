@@ -14,6 +14,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import BusinessLayout from "./components/business/BusinessLayout";
 import InfluencerLayout from "./components/influencer/InfluencerLayout";
 import ResellerLayout from "./components/reseller/ResellerLayout";
+import InfluencerDirectory from "./pages/business/InfluencerDirectory";
 
 // Pages - Lazy Loaded (Removed .tsx extensions)
 const Index = lazy(() => import("./pages/Index"));
@@ -137,6 +138,7 @@ const App = () => (
                 <Route index element={<BusinessHome />} />
                 <Route path="campaigns" element={<BusinessCampaigns />} />
                 <Route path="create-campaign" element={<CreateCampaign />} />
+                <Route path="influencers" element={<InfluencerDirectory />} />
                 <Route path="proof-review" element={<ProofReview />} />
                 <Route path="analytics" element={<BusinessAnalytics />} />
                 <Route path="wallet" element={<BusinessWalletPage />} />

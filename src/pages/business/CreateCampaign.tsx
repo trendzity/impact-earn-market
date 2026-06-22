@@ -48,6 +48,8 @@ const CreateCampaign = () => {
     publishToYouTube: false,
     isLinkedInSync: false,
     hashtags: "",
+    targetRole: "GENERAL",
+    targetCategories: [] as string[],
   });
 
   const [suggestingHashtags, setSuggestingHashtags] = useState(false);
@@ -189,6 +191,27 @@ const CreateCampaign = () => {
       toast.error("Please fill in basic details (Title, Budget, Reward)");
       return;
     }
+
+    const budgetNum = parseFloat(formData.budget);
+    const rewardNum = parseFloat(formData.reward);
+    const limitNum = parseInt(formData.totalLimit, 10) || 100;
+
+    if (isNaN(budgetNum) || budgetNum <= 0) {
+      toast.error("Total budget must be a positive number");
+      return;
+    }
+    if (isNaN(rewardNum) || rewardNum <= 0) {
+      toast.error("Reward amount must be a positive number");
+      return;
+    }
+    if (isNaN(limitNum) || limitNum <= 0) {
+      toast.error("Max participants must be a positive integer");
+      return;
+    }
+    if (budgetNum < rewardNum * limitNum) {
+      toast.error(`Based on your setup (${limitNum} participants × ₹${rewardNum} reward), the budget must be at least ₹${rewardNum * limitNum}.`);
+      return;
+    }
     if (!formData.isSocialSync && !formData.link) {
       toast.error("A target link is required if Social Sync is disabled");
       return;
@@ -197,6 +220,11 @@ const CreateCampaign = () => {
       toast.error("An image or video is required for Social Media Sync.");
       return;
     }
+    if (formData.targetRole === "INFLUENCER" && formData.targetCategories.length === 0) {
+      toast.error("Please select at least one target category for influencers.");
+      return;
+    }
+
 
     // Prevent submission if Social Sync is ON but platform is not connected
     if (formData.isSocialSync) {
@@ -319,6 +347,78 @@ const CreateCampaign = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                   />
                 </div>
+
+                                {/* Target Audience & Categories */}
+                <div className="space-y-4 p-4 rounded-xl border border-border/50 bg-muted/20">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Target Audience *</Label>
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-foreground">
+                        <input
+                          type="radio"
+                          name="targetRole"
+                          value="GENERAL"
+                          checked={formData.targetRole === "GENERAL"}
+                          className="accent-accent"
+                          onChange={() => setFormData(prev => ({ ...prev, targetRole: "GENERAL", targetCategories: [] }))}
+                        />
+                        General Users
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-foreground">
+                        <input
+                          type="radio"
+                          name="targetRole"
+                          value="INFLUENCER"
+                          checked={formData.targetRole === "INFLUENCER"}
+                          className="accent-accent"
+                          onChange={() => setFormData(prev => ({ ...prev, targetRole: "INFLUENCER" }))}
+                        />
+                        Influencers
+                      </label>
+                    </div>
+                  </div>
+
+                  {formData.targetRole === "INFLUENCER" && (
+                    <div className="space-y-3 pt-2 border-t border-border/30">
+                      <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Target Niche Categories (Select all that apply) *</Label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {[
+                          { id: "tech", label: "Tech & AI" },
+                          { id: "finance", label: "Finance" },
+                          { id: "forex", label: "Forex & Trading" },
+                          { id: "food", label: "Food & Cooking" },
+                          { id: "lifestyle", label: "Lifestyle & Fashion" },
+                          { id: "beauty", label: "Beauty & Cosmetics" },
+                          { id: "gaming", label: "Gaming" },
+                          { id: "travel", label: "Travel" },
+                          { id: "fitness", label: "Fitness & Health" },
+                          { id: "education", label: "Education" }
+                        ].map((cat) => {
+                          const isSelected = formData.targetCategories.includes(cat.id);
+                          return (
+                            <label key={cat.id} className="flex items-center gap-2 cursor-pointer text-xs text-foreground">
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                className="rounded border-border accent-accent"
+                                onChange={() => {
+                                  setFormData(prev => {
+                                    const next = isSelected
+                                      ? prev.targetCategories.filter(c => c !== cat.id)
+                                      : [...prev.targetCategories, cat.id];
+                                    return { ...prev, targetCategories: next };
+                                  });
+                                }}
+                              />
+                              {cat.label}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
 
                 {/* Platform & Objective */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

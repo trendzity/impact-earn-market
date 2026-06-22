@@ -11,6 +11,7 @@ import {
   Building2,
   Landmark,
   Wallet,
+  Users,
 } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "@/utils/auth";
@@ -33,6 +34,7 @@ const menuItems = [
   { title: "Brand Profile", url: "/business/profile", icon: Building2 },
   { title: "Campaigns", url: "/business/campaigns", icon: Megaphone },
   { title: "Create Campaign", url: "/business/create-campaign", icon: PlusCircle },
+  { title: "Find Influencers", url: "/business/influencers", icon: Users },
   { title: "Proof Review", url: "/business/proof-review", icon: ClipboardCheck },
   { title: "Analytics", url: "/business/analytics", icon: BarChart3 },
   { title: "Campaign Wallet", url: "/business/wallet", icon: Wallet },
